@@ -1,0 +1,147 @@
+﻿@inject IJSRuntime _jsRuntime;
+<style>
+    .bid-item {
+        display: flex;
+        flex-direction: column;
+        width: 350px;
+        background-color: white;
+        padding: 2px;
+        border-radius: 10px;
+        margin-right: auto;
+        margin-left: auto;
+        height: 400px;
+        margin: 10px;
+    }
+
+    .bid-img img {
+        width: 98%;
+        height: 300px;
+        border-radius: 10px;
+    }
+
+    .bid-details {
+        display: flex;
+        justify-content: space-between;
+        padding-right: 10px;
+        padding-left: 10px;
+        margin-top: -50px;
+        background-color: rgba(255, 255, 255, 0.7);
+        border-radius: 10px;
+        width:99%;
+    }
+
+    .bid-left {
+      
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 2px;
+        border-radius: 10px;
+        justify-content: space-between;
+    }
+
+    .bid-right {
+      
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 2px;
+        padding: 2%;
+        border-radius: 10px;
+        align-items: start;
+        justify-content: space-between;
+    }
+
+    .btn-edit {
+        background-color: black;
+        color: white;
+        width: 90%;
+        padding: 5px;
+        height: 25px;
+        border-radius: 5px;
+    }
+
+    .app input {
+        border: none;
+        outline: none;
+        border: solid 1px;
+        border-color: #CB4427;
+        width: 90%;
+        padding: 6px;
+        border-radius: 10px;
+    }
+
+    .btn-close {
+        color: #CB4427;
+        width: 90%;
+        border-radius: 10px;
+        border-color: #CB4427;
+        background-color: white;
+        padding: 6px;
+        border: solid 2px;
+    }
+
+    .btn-delete {
+        background-color: #CB4427;
+        border: none;
+        width: 90%;
+        padding: 6px;
+        
+        border-radius: 5px;
+        color: white;
+    }
+
+    .app p {
+        color: #CB4427;
+        font-weight: bold;
+    }
+
+    .bid-item{
+        margin:10px;
+    }
+</style>
+
+<div class="bid-item">
+    <div class="bid-img">
+        <img src="@art.Image" class="">
+    </div>
+    <div class="bid-details">
+        <div class="bid-left">
+            <h4> @art.Name </h4>
+            <span style="display:flex;">Higest Bid: <p> Ksh 31,000</p></span>
+            <span style="display:flex;">Start Price: <p>Ksh 30,000</p></span>
+            <button class="btn-edit" @onclick="editArt">Edit</button>
+        </div>
+        <div class="bid-right">
+            <h4>01D:05H:10M:30S</h4>
+            <p style="background-color:#FFE9E4; Padding:4px;">Biding Open</p>
+            <button class="btn-close" >Close Bid</button>
+            <button class="btn-delete" @onclick="removeArt">Delete</button>
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    [Parameter]
+
+    public Art art { get; set; } = default!; //in future a memory will be passed
+
+    [Parameter]
+    public EventCallback<Art> OnRemoveArt { get; set; } //communicates with parent to add newly added memory to list
+
+    public async Task removeArt()
+    {
+        await OnRemoveArt.InvokeAsync(art);
+        await _jsRuntime.InvokeVoidAsync("ShowMessage", "error", "Product Deleted Successfully");
+    }
+    [Parameter]
+    public EventCallback<Art> OnEditArt { get; set; } //communicates with parent to add newly added memory to list
+
+    public async Task editArt()
+    {
+        await OnEditArt.InvokeAsync(art);
+        await _jsRuntime.InvokeVoidAsync("ShowMessage", "edit", "Product selected for editing");
+    }
+}

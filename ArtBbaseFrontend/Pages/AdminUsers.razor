@@ -1,0 +1,131 @@
+﻿@page "/adminusers"
+<LayoutAdmin></LayoutAdmin>
+
+<style>
+    .app {
+        margin-left: 14%;
+        padding: 5px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .topon {
+        margin-top: 61px;
+    }
+
+    .bid-item {
+        width: 95%;
+        display: flex;
+        height: 50%;
+        background-color: white;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .bid-img {
+        width: 20%;
+        padding: 5px;
+    }
+
+    .bid-item img {
+        height: 70px;
+        width: 80%;
+        max-width: 100px;
+    }
+
+    .bid-details {
+        width: 80%;
+        display: flex;
+        justify-content: space-between;
+        align-content: center;
+        padding: 5px;
+        flex-wrap: wrap;
+       
+        height:95%;
+    }
+
+        .bid-details div {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 60px;
+            width:20%;
+
+        }
+
+        .bid-details p {
+            color: #CB4427;
+            font-weight: bold;
+        }
+
+    bid-right button{
+        margin:auto%;
+    }
+
+    .btn-bid-manage {
+        background-color: #CB4427;
+        border: none;
+        width: 90%;
+        padding: 5px;
+        height: 25px;
+        border-radius: 5px;
+        color: white;
+    }
+
+    .btn-bid-email {
+        background-color: forestgreen;
+        border: none;
+        width: 90%;
+        padding: 5px;
+        height: 25px;
+        border-radius: 5px;
+        color: white;
+    }
+
+    .btn-bid-view {
+        background-color: black;
+        border: none;
+        width: 90%;
+        padding: 5px;
+        height: 25px;
+        border-radius: 5px;
+        color: white;
+    }
+
+ 
+</style>
+
+<div class="app">
+    <h3 class="topon"> Manage Users</h3>
+
+    <div class="bid-item">
+        <div class="bid-img">
+            <img src="/images/pics/Monalisa.png" />
+        </div>
+        <div class="bid-details">
+            <div class="bid-left">
+                <h4> John Wachira </h4>
+                <p style="Padding:4px;">Email: Mjwachira1@gmail.com</p>
+            </div>
+
+            <div class="bid-center">
+                <span style="display:flex;">Art On Auction :  <p> 1 </p></span>
+                <span style="display:flex;"> Art Sold :  <p> 2</p></span>
+                <span style="display:flex;">Art Bought :  <p> 3</p></span>
+            </div>
+
+            <div class="bid-right">
+                <button class="btn-bid-view">View</button>
+                <button class="btn-bid-email">Email</button>
+                <button class="btn-bid-manage">Manage</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@code {
+
+}

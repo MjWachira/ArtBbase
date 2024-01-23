@@ -1,0 +1,79 @@
+﻿<style>
+    .addForm{
+        width:350px;
+        background-color:white;
+        padding:10px;
+        border-radius:20px;   
+        display:flex;
+        flex-direction:column;
+        gap:5px;
+        justify-content:center;
+    }
+
+    .row img{ 
+        width:99%;
+        height:150px;
+    }
+</style>
+<EditForm class="addForm" Model="@art" OnValidSubmit="addNewArt">
+    <DataAnnotationsValidator />
+    <div class="row">
+        <img src="@(string.IsNullOrWhiteSpace(art.Image) ? "https://cdn.pixabay.com/photo/2015/06/24/15/45/hands-820272_1280.jpg" : art.Image)" />
+    </div>
+
+    <div class="row">
+        <h1> @(isEditing ? "Edit Art" : "Add Art")</h1>
+        <ValidationSummary />
+        <div class="form-group">
+            <label for="Name">Name</label>
+            <InputText class="form-control" @bind-Value="art.Name" id="Name" placeholder="Art Name" />
+        </div>
+
+        <div class="form-group">
+            <label for="Description">Description</label>
+            <InputText class="form-control" @bind-Value="art.Description" id="Description" placeholder="Art Description" />
+        </div>
+
+        <div class="form-group">
+            <label for="Image">Image</label>
+            <InputText class="form-control" @bind-Value="art.Image" id="Image" placeholder="Art Image" />
+        </div>
+        <div class="form-group">
+            <label for="Price">Start Price</label>
+            <InputNumber class="form-control" @bind-Value="art.StartBid" id="Price" placeholder="Art Start Price" />
+        </div>
+        <div class="form-group">
+            <label for="StartTime">Stop Time</label>
+            <InputDate class="form-control" @bind-Value="art.StopTime" id="StopTime" placeholder="Stop Time" />
+        </div>
+        <div class="form-group">
+            <label for="Name">Category</label>
+            <InputText class="form-control" @bind-Value="art.Name" id="Name" placeholder="Product Name" />
+        </div>
+
+        <button type="submit" class="mt-4 btn btn-primary">@(isEditing ? "Edit" : "Add")</button>
+    </div>
+
+
+</EditForm>
+
+
+
+@code {
+    public bool isEditing { get; set; } = false;
+
+    public Art art { get; set; } = new Art();
+
+    [Parameter]
+    public EventCallback<Art> OnAddArt { get; set; } //communicates with parent to add newly added product to list
+
+    public async Task addNewArt()
+    {
+        await OnAddArt.InvokeAsync(art);
+    }
+    public void EditArt(Art artToEdit)
+    {
+        art = artToEdit;
+        isEditing = true;
+    }
+}

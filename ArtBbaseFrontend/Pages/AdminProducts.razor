@@ -1,0 +1,290 @@
+﻿@page "/adminproducts"
+<LayoutAdmin></LayoutAdmin>
+<style>
+ .app{
+        margin-left: 14%;
+        padding: 5px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 15px;
+       
+    }
+
+    .topon{
+        margin-top: 61px;
+    }
+    .top-bid{
+        display: flex;
+        flex-direction: column;
+        width:95%;
+        background-color: white;
+        padding:20px;
+        border-radius:10px;
+        margin-right:auto;
+        margin-left:auto;
+        height:30%;
+        
+        
+    }
+    .top-bid img{
+        width:100%;
+        height:50%;
+
+    }
+
+    .top-details{
+        display:flex;
+        justify-content:space-between;
+        padding-right:10px;
+        padding-left: 10px;
+        margin-top:-50px;
+        
+    }
+
+    .top-left{
+        width:45%;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        background-color: rgba(255, 255, 255, 0.7);
+        padding:2%;
+        border-radius:10px;
+        justify-content: space-between;
+    }
+
+    .top-right{
+        width: 45%;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        background-color: rgba(255, 255, 255, 0.7);
+        padding: 2%;
+        border-radius: 10px;
+        align-items: start;
+        justify-content: space-between;
+    }
+    .btn-view{
+        background-color:black;
+        color:white;
+        width:90%;
+        padding:5px;
+        height:25px;
+        border-radius:5px;
+    }
+
+    .app input {
+        border:none;
+        outline:none;
+        border: solid 1px;
+        border-color: #CB4427;
+        width: 90%;
+        padding:5px;
+        border-radius:10px;
+        
+    }
+
+    .btn-close {
+
+        border: none;
+        outline: none;
+        border: solid 1px;
+        border-color: #CB4427;
+        width: 90%;
+        padding: 5px;
+        border-radius: 10px;
+    }
+
+    .btn-bid{
+        background-color: #CB4427;
+        border: none;
+        width: 90%;
+        padding: 5px;
+        height: 25px;
+        border-radius: 5px;
+        color: white;
+
+    }
+
+    .app p{
+        color: #CB4427;
+        font-weight:bold;
+    }
+
+    .bid-item {
+        display: flex;
+        flex-direction: column;
+        width: 350px;
+        background-color: white;
+        padding: 2px;
+        border-radius: 10px;
+        margin-right: auto;
+        margin-left: auto;
+        height: 30%;
+        margin:10px;
+    }
+
+        .bid-img img {
+            width: 100%;
+            height: 350px;
+            border-radius:10px;
+        }
+
+    .bid-details {
+        display: flex;
+        justify-content: space-between;
+        padding-right: 10px;
+        padding-left: 10px;
+        margin-top: -50px;
+        background-color: rgba(255, 255, 255, 0.7);
+        border-radius:10px;
+    }
+
+    .bid-left {
+        width: 50%;
+       
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 2px;
+        border-radius: 10px;
+        justify-content:space-between;
+    }
+
+    .bid-right {
+        width: 50%;
+        display: flex;
+       
+        flex-direction: column;
+        gap: 10px;
+        padding: 2px;
+        padding: 2%;
+        border-radius: 10px;
+        align-items: start;
+        justify-content:space-between;
+    }
+
+    .items{
+        display:flex;
+        flex-wrap:wrap;
+        align-items:center;
+        justify-content:center;
+    }
+    .search{
+        width:95%;
+        background-color:white;
+        justify-content:space-evenly;
+        height:50px;
+        margin-right:auto;
+        margin-left:auto;
+        padding:15px;
+        margin-top:10px;
+        display:flex;
+
+    }
+</style>
+
+<div class="app">
+    <h3 class="topon">Top On Auction</h3>
+    <div class="top-bid">
+       
+        <div class="topb-img">
+            <img src="/images/pics/3in1.png" />
+        </div>
+        <div class="top-details">
+
+            <div class="top-left">
+                <h4> Three In One Art </h4>
+                <span style="display:flex;">Higest Bid: <p> Ksh 31,000</p></span>
+                <span style="display:flex;">Start Price: <p>Ksh 30,000</p></span>
+                <a href="buyerviewitem"><button class="btn-view">Edit Item</button></a>
+            </div>
+            <div class="top-right">
+                <h4>01D:05H:10M:30S</h4>
+                <p style="background-color:#FFE9E4; Padding:4px;">Biding Open</p>
+                <button class="btn-close">Close Bid</button>
+                <button class="btn-bid">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <div class="search"> 
+        <div style="width:60%">
+            <h3>Gallary on Auction</h3> 
+        </div>
+        <div>
+            <span>Search - Filter</span>
+        </div>
+        <div>
+            <input type="text" />
+         </div>
+    </div>
+
+    <div class="items">
+        <div class="bid-item">
+            <div class="bid-img">
+                <img src="/images/pics/Monalisa.png" />
+            </div>
+            <div class="bid-details">
+                <div class="bid-left">
+                    <h4> Three In One Art </h4>
+                    <span style="display:flex;">Higest Bid: <p> Ksh 31,000</p></span>
+                    <span style="display:flex;">Start Price: <p>Ksh 30,000</p></span>
+                    <a><button class="btn-view">View Item</button></a>
+                </div>
+                <div class="bid-right">
+                    <h4>01D:05H:10M:30S</h4>
+                    <p style="background-color:#FFE9E4; Padding:4px;">Biding Open</p>
+                    <button class="btn-close">Close Bid</button>
+                    <button class="btn-bid">Bid Now</button>
+                </div>
+            </div>
+        </div>
+        <div class="bid-item">
+            <div class="bid-img">
+                <img src="/images/pics/Monalisa.png" />
+            </div>
+            <div class="bid-details">
+                <div class="bid-left">
+                    <h4> Three In One Art </h4>
+                    <span style="display:flex;">Higest Bid: <p> Ksh 31,000</p></span>
+                    <span style="display:flex;">Start Price: <p>Ksh 30,000</p></span>
+                    <a><button class="btn-view">View Item</button></a>
+                </div>
+                <div class="bid-right">
+                    <h4>01D:05H:10M:30S</h4>
+                    <p style="background-color:#FFE9E4; Padding:4px;">Biding Open</p>
+                    <button class="btn-close">Close Bid</button>
+                    <button class="btn-bid">Bid Now</button>
+                </div>
+            </div>
+        </div>
+        <div class="bid-item">
+            <div class="bid-img">
+                <img src="/images/pics/Monalisa.png" />
+            </div>
+            <div class="bid-details">
+                <div class="bid-left">
+                    <h4> Three In One Art </h4>
+                    <span style="display:flex;">Higest Bid: <p> Ksh 31,000</p></span>
+                    <span style="display:flex;">Start Price: <p>Ksh 30,000</p></span>
+                    <a><button class="btn-view">View Item</button></a>
+                </div>
+                <div class="bid-right">
+                    <h4>01D:05H:10M:30S</h4>
+                    <p style="background-color:#FFE9E4; Padding:4px;">Biding Open</p>
+                    <button class="btn-close">Close Bid</button>
+                    <button class="btn-bid">Bid Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    
+</div>
+@code {
+
+}

@@ -1,0 +1,85 @@
+﻿<style>
+
+
+    .buyer {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar button {
+        color: #CB4427;
+        width: 90%;
+        border-radius: 10px;
+        border-color: #CB4427;
+        background-color: white;
+        padding: 6px;
+        border: solid 2px;
+        font-weight: 600;
+    }
+
+    .buyer {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    h3 {
+        color: #CB4427;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .sidebar img {
+        margin-left: auto;
+        margin-right: auto;
+        width: 80%;
+        min-width: 50px;
+        min-height: 50px;
+        max-width: 120px;
+        max-height: 120px;
+        border: solid;
+        border-color: #CB4427;
+        border-radius: 500px;
+    }
+
+    .img-holder {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-left: auto;
+        margin-right: auto;
+        align-content: center;
+    }
+</style>
+<header>
+    <nav class="navbar">
+        <a href="seller" class="logo"><i class=""></i> <img class="logo" src="/images/pics/ArtBbase.png" /> </a>
+        <a class="" href="seller">Home</a>
+        <a href="">How It Works</a>
+    </nav>
+
+    <div class="btns">
+        <a href="/admin">Admin</a>
+        <a href="/home">Buy</a>
+        <button class="btn"><a href="/login">Account</a></button>
+    </div>
+</header>
+
+<div class="sidebar">
+
+    <div class="img-holder">
+        <img src="/images/pics/Monalisa.png" />
+        <h3>Seller</h3>
+    </div>
+    <div class="buyer">
+
+        <a href="seller"><button>Add Art</button></a>
+        <a href="myart"><button>My Art</button></a>
+        <a href="mywallet"><button>My Wallet</button></a>
+    </div>
+    <a href="/"><button>Logout</button></a>
+</div>
+
+@code {
+
+}
