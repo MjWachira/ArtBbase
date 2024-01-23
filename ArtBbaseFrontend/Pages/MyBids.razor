@@ -1,0 +1,157 @@
+﻿@page "/mybids"
+<LayoutBuyer></LayoutBuyer>
+<style>
+    .app{
+        
+        margin-left:14%;
+        padding:5px; 
+        display:flex;
+        flex-direction:column;
+        justify-content: center;
+        gap:15px;
+    }
+
+    .topon {
+        margin-top: 61px;
+    }
+
+    .bid-item{
+        width:95%;
+        display:flex;
+        height:30%;
+        background-color:white;
+        flex-wrap:wrap;
+        justify-content:center;
+    }
+    .bid-img{
+        width:20%;
+        padding:5px;
+    }
+    .bid-item img{
+        height:70px;
+        width:80%;
+        max-width:100px;
+        
+    }
+
+    .bid-details{
+        width:80%;
+        display: flex;
+        justify-content:space-between;
+        align-content:center;
+        padding:5px;
+        flex-wrap:wrap;
+        gap:10px;
+    }
+    .bid-details div{
+        display:flex;
+        flex-direction:column;
+       justify-content:space-between;
+       height:60px;
+    }
+    .bid-details p{
+            color: #CB4427;
+            font-weight: bold;
+    }
+
+    .btn-bid {
+        background-color: #CB4427;
+        border: none;
+        width: 90%;
+        padding: 5px;
+        height: 25px;
+        border-radius: 5px;
+        color: white;
+    }
+
+    .btn-bid-lost {
+        background-color: #F5DAD4;
+        border: none;
+        width: 90%;
+        padding: 5px;
+        height: 25px;
+        border-radius: 5px;
+        color: white;
+    }
+
+    .btn-bid-won {
+        background-color: black;
+        border: none;
+        width: 90%;
+        padding: 5px;
+        height: 25px;
+        border-radius: 5px;
+        color: white;
+    }
+ </style>
+
+<div class="app">
+    <h3 class="topon"> My Bids</h3>
+
+    <div class="bid-item">
+        <div class="bid-img">
+            <img src="/images/pics/Monalisa.png" />
+        </div>
+        <div class="bid-details">
+            <div class="bid-left">
+                <h4> Monalisa Startue </h4>
+                <p style="background-color:#FFE9E4; Padding:4px;">Biding Open</p>
+               
+            </div>
+            <div class="bid-center">
+                <span style="display:flex;">Your Bid: <p> Ksh 31,000</p></span>
+                <span style="display:flex;">Highest Bid: <p>Ksh 32,000</p></span>
+            </div>
+            <div class="bid-right">
+                <h4>01D:05H:10M:30S</h4>  
+                <a href="buyerviewitem"><button class="btn-bid">Bid Again</button></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="bid-item">
+        <div class="bid-img">
+            <img src="/images/pics/Monalisa.png" />
+        </div>
+        <div class="bid-details">
+            <div class="bid-left">
+                <h4> Monalisa Startue </h4>
+                <p style="background-color:#FFE9E4; Padding:4px;">Biding Closed</p>
+
+            </div>
+            <div class="bid-center">
+                <span style="display:flex;">Your Bid: <p> Ksh 31,000</p></span>
+                <span style="display:flex;">Highest Bid: <p>Ksh 32,000</p></span>
+            </div>
+            <div class="bid-right">
+                <h4>00D:00H:00M:00S</h4>
+                <button class="btn-bid-lost">Bid Lost</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bid-item">
+        <div class="bid-img">
+            <img src="/images/pics/Monalisa.png" />
+        </div>
+        <div class="bid-details">
+            <div class="bid-left">
+                <h4> Monalisa Startue </h4>
+                <p style="background-color:#FFE9E4; Padding:4px;">Bid Won</p>
+
+            </div>
+            <div class="bid-center">
+                <span style="display:flex;">Your Bid: <p> Ksh 32,000</p></span>
+                <span style="display:flex;">Highest Bid: <p>Ksh 32,000</p></span>
+            </div>
+            <div class="bid-right">
+                <h4>00D:00H:00M:00S</h4>
+                <a href="myorders"><button class="btn-bid-won">Checkout</button></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+}

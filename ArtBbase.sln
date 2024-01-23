@@ -3,7 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArtBbase-Frontend", "ArtBbase-Frontend\ArtBbase-Frontend.csproj", "{119DE76B-EC22-4D58-AAC3-824D4541B41C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArtBbaseFrontend", "ArtBbaseFrontend\ArtBbaseFrontend.csproj", "{6B746831-4EAB-49E5-AD73-4CE5286DF984}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthService", "AuthService\AuthService.csproj", "{5BD7F8C4-B27D-43EA-BB1E-97C8943A1DEC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtMessageBus", "ArtMessageBus\ArtMessageBus.csproj", "{3472283F-392A-44AC-85DB-4D5EB50CF07A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MailService", "MailService\MailService.csproj", "{50D02D48-7F2F-4556-9225-F6C8C949D826}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtService", "ArtService\ArtService.csproj", "{53DC9C01-7760-4FD4-90F2-46B6699B5404}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +19,26 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{119DE76B-EC22-4D58-AAC3-824D4541B41C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{119DE76B-EC22-4D58-AAC3-824D4541B41C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{119DE76B-EC22-4D58-AAC3-824D4541B41C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{119DE76B-EC22-4D58-AAC3-824D4541B41C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B746831-4EAB-49E5-AD73-4CE5286DF984}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B746831-4EAB-49E5-AD73-4CE5286DF984}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B746831-4EAB-49E5-AD73-4CE5286DF984}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B746831-4EAB-49E5-AD73-4CE5286DF984}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BD7F8C4-B27D-43EA-BB1E-97C8943A1DEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BD7F8C4-B27D-43EA-BB1E-97C8943A1DEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BD7F8C4-B27D-43EA-BB1E-97C8943A1DEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BD7F8C4-B27D-43EA-BB1E-97C8943A1DEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3472283F-392A-44AC-85DB-4D5EB50CF07A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3472283F-392A-44AC-85DB-4D5EB50CF07A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3472283F-392A-44AC-85DB-4D5EB50CF07A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3472283F-392A-44AC-85DB-4D5EB50CF07A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50D02D48-7F2F-4556-9225-F6C8C949D826}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50D02D48-7F2F-4556-9225-F6C8C949D826}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50D02D48-7F2F-4556-9225-F6C8C949D826}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50D02D48-7F2F-4556-9225-F6C8C949D826}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53DC9C01-7760-4FD4-90F2-46B6699B5404}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53DC9C01-7760-4FD4-90F2-46B6699B5404}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53DC9C01-7760-4FD4-90F2-46B6699B5404}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53DC9C01-7760-4FD4-90F2-46B6699B5404}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,98 @@
+﻿@page "/admin"
+@inject HttpClient Http
+@using System.Globalization;
+
+<LayoutAdmin></LayoutAdmin>
+
+<style>
+    .app{
+        margin-left: 14%;
+        display:flex;
+        padding-top:62px;
+        width:86%;
+    }
+    .addArt{
+        width:20%;
+    }
+    .addArt img{
+        width:90%;
+    }
+    .art-item{
+        display:flex;
+        flex-wrap:wrap;
+        gap:10px;
+        width:66%;
+
+    }
+</style>
+
+<div class="app" >
+    <div class="Add-Art">
+        <AddArt @ref="addArt" OnAddArt="AddArt"></AddArt>
+    </div>
+
+
+       <div class="art-item">
+            @foreach (var art in arts)
+            {
+                <SingleArt
+                    art="art"
+                    OnRemoveArt="()=> RemoveArt(art)"
+                    OnEditArt="EditArt">
+                </SingleArt>
+            }
+        </div>
+    </div>
+
+
+@code {
+
+    public List<Art> arts = new List<Art>();
+
+    /// <summary>
+    /// public bool IsConfirmed { get; set; }
+    /// </summary>
+    /// <returns></returns>
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        //call api to get the products to display
+
+        var artg = await Http.GetFromJsonAsync<List<Art>>("sample-data/artpics.json");
+        if (artg.Any())
+        {
+            arts = artg;
+        }
+    }
+   
+
+    public void AddArt(Art art)
+    {
+        var exitingArt = arts.Find(p => p.Id == art.Id);
+        if (exitingArt == null)
+        {
+            art.Id = arts.Count + 1;
+            arts.Add(art);
+            return;
+        }
+        exitingArt.Name = art.Name;
+        exitingArt.Description = art.Description;
+        
+        exitingArt.Image = art.Image;
+    }
+
+    public void RemoveArt(Art art)
+    {
+       arts.Remove(art);
+
+    }
+    /**/
+    public AddArt addArt;
+
+    public void EditArt(Art art)
+    {
+        addArt.EditArt(art);
+
+    }
+}
