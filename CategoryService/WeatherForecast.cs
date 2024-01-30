@@ -1,4 +1,4 @@
-namespace ArtService
+namespace CategoryService
 {
     public class WeatherForecast
     {

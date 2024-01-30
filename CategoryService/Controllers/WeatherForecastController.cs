@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace ArtService.Controllers
+namespace CategoryService.Controllers
 {
     [ApiController]
     [Route("[controller]")]

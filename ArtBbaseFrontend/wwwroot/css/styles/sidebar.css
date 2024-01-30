@@ -1,10 +1,22 @@
 ﻿body {
 }
-.sidebar {
-    display: flex;
+
+.side_bar_container {
     margin-top: 61px;
-    flex-direction: column;
+    position:fixed;
+   
+
+
+
+}
+.navbar .menu_icon {
+    display:none;
+}
+
+.sidebar {
     position: fixed;
+    display: flex;
+    flex-direction: column;
     width: 13%;
     min-width: 100px;
     height: 90vh;
@@ -66,11 +78,15 @@ h3 {
 }
 
 @media (max-width: 760px) {
-    .sidebar {
-        display: none; /* Hide the sidebar on screens with a width of 700px or less */
+    .toggle_menu {
+        transform:translate(-30rem);
     }
     .app{
         margin-right:auto;
         margin-left:auto;
+    }
+
+    .navbar .menu_icon {
+        display: unset;
     }
 }
