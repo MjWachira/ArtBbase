@@ -1,4 +1,6 @@
-﻿<style>
+﻿@inject IJSRuntime _iJSRuntime;
+
+<style>
 
     .buyer {
         display: flex;
@@ -50,8 +52,14 @@
         align-content: center;
     }
 </style>
+
+<head>
+    <link href="css/styles/sidebar.css" rel="stylesheet" />
+</head>
 <header>
-    <nav class="navbar">
+    <nav class="navbar ">
+        <span class="material-icons menu_icon" @onclick="toggleMenu">menu</span>
+
         <a href="seller" class="logo"><i class=""></i> <img class="logo" src="/images/pics/ArtBbase.png" /> </a>
         <a class="" href="seller">Home</a>
         <a href="">How It Works</a>
@@ -63,8 +71,8 @@
     </div>
 </header>
 
-<div class="sidebar">
-
+<div class="side_bar_container">
+    <div class="sidebar toggle_menu" id="sidebar">
     <div class="img-holder">
         <img src="/images/pics/Monalisa.png" />
         <h3>Admin</h3>
@@ -77,7 +85,13 @@
     </div>
     <a href="/"><button>Logout</button></a>
 </div>
+</div>
 
-@code {
+@code  {
+    public async void toggleMenu()
+    {
+        Console.WriteLine("hello world");
+        await _iJSRuntime.InvokeVoidAsync("ShowMessage","success","hello wolrd");
 
+    }
 }

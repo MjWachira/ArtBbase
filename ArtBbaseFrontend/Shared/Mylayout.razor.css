@@ -1,0 +1,156 @@
+﻿/* SideMenu.razor.css */
+
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+nav {
+    margin-top: 0;
+    position:fixed;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    padding-right: 10px;
+    padding-left: 10px;
+    height: 45px;
+    background-color: white;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Box shadow added */
+}
+
+    nav div {
+        display: flex;
+        flex-direction: row;
+        height: 100%;
+        align-items: center;
+    }
+
+.left a {
+    text-decoration: none;
+    margin: 10px;
+    color: #333;
+    transition: 0.5s;
+}
+
+    .left a:hover {
+        background-color: #CB4427;
+        color: white;
+        padding: 5px;
+        border-radius: 2px;
+        transition: 0.5s;
+    }
+
+
+.btn a {
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.btn {
+    background-color: #CB4427;
+    color: white;
+    border: none;
+    height: 35px;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+    transition: 0.5s;
+}
+    .btn:hover {
+        background-color: white;
+        color: #CB4427;
+        border: solid 1px;
+        border-color: #CB4427;
+        transition: 0.5s;
+    }
+
+.left {
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.right {
+    justify-content: right;
+    width: 10%;
+}
+
+.ham {
+    font-size: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #CB4427;
+    transition: 0.5s;
+    margin-bottom:4px;
+    display:none;
+}
+    .ham:hover {
+        font-size:25px;
+        transition: 0.5s;
+    }
+
+.logo {
+    width: 100px;
+    margin: 5px;
+    margin-right:10px;
+    margin-left:10px;
+}
+
+#sidebar {
+    margin-top:50px;
+    height: 92%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: white;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Box shadow added */
+    border-radius:10px;
+}
+
+    #sidebar a {
+        padding: 15px 25px;
+        text-decoration: none;
+        font-size: 25px;
+        color: #818181;
+        display: block;
+        transition: 0.3s;
+    }
+
+        #sidebar a:hover {
+            color: #f1f1f1;
+        }
+
+    #sidebar .close-btn {
+        position: absolute;
+        top: 0;
+        right: 25px;
+        font-size: 30px;
+        margin-left: 50px;
+    }
+
+#main-content {
+    transition: margin-left 0.5s;
+    padding: 16px;
+    display:none;
+}
+@media screen and (max-width: 600px) {
+    .left a{
+        display:none;
+    }
+    .ham{
+        display:unset;
+    }
+}
+@media screen and (max-width: 260px) {
+    .logo {
+        display: none;
+
+    }
+}

@@ -1,5 +1,7 @@
 window.ShowMessage = (type, message) => {
     if (type === 'success') {
+         toggleSidebar()
+
         Swal.fire({
             title: "Added Successfully!",
             text: message,
@@ -24,6 +26,16 @@ window.ShowMessage = (type, message) => {
 
 
 }
-function toggleSidebar(displayValue) {
-    document.getElementById("sidebar").style.display = displayValue;
+function toggleNav() {
+    var x = document.getElementById("myTopnav");
+    var icon = document.querySelector('.topnav a.icon');
+
+    if (x.className.indexOf("responsive") === -1) {
+        x.className += " responsive";
+        icon.innerHTML = '<div class="close">&#10006;</div>';
+    } else {
+        x.className = "topnav";
+        icon.innerHTML = '<div class="hamburger">&#9776;</div>';
+    }
 }
+

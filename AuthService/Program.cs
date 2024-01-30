@@ -1,4 +1,5 @@
 using AuthService.Data;
+using AuthService.Extensions;
 using AuthService.Models;
 using AuthService.Services;
 using AuthService.Services.IServices;
@@ -26,6 +27,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
 
+
+//Set cors policy
+builder.Services.AddCors(options => options.AddPolicy("policy", build =>
+{
+    //build.WithOrigins("https://localhost:7257");
+    build.AllowAnyOrigin();
+    build.AllowAnyHeader();
+    build.AllowAnyMethod();
+}));
 //Add Auto Mapper
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -37,6 +47,8 @@ builder.Services.AddScoped<IJwt,JwtService>();
 //configure JWTOptions Class
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 
+builder.AddAuth();
+builder.AddSwaggenGenExtension();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -46,9 +58,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMigrations();
+
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+
 app.UseAuthorization();
+
+app.UseCors("policy");
 
 app.MapControllers();
 

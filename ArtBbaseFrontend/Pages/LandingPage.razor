@@ -1,66 +1,21 @@
 ﻿@page "/"
 
-<LayoutLanding></LayoutLanding>
-<style>
-    .main{
-       display: flex; 
-       height:100vh;
-        margin-right: auto;
-        margin-left: auto;
-        background-color: #D6EFD7;
+<Mylayout></Mylayout>
 
-    }
-    .landing-left{
-        width:50%;
-        display:flex;
-        flex-direction:column;
-        gap:6%;
-        align-content:center;
-        justify-content:center;
-        padding:5%;
-    }
-    .bidbtn{
-        background-color: #CB4427;
-        color: white;
-        border: none;
-        height: 35px;
-        border-radius: 5px;
-        padding: 10px;
-        margin: 10px;
-        cursor: pointer;
-        width: 150px;
-    }
-
-    .bidbtn a {
-        color: white;
-        font-weight: bold;
-        text-decoration: none;
-    }
-
-    .right{
-        width: 50%;
-        display: flex;
-        flex-direction: column;
-        gap: 6%;
-        align-content: center;
-        justify-content: center;
-   
-
-    }
-    img{
-        width:80%;
-        max-width:400px;
-        margin-right:auto;
-        margin-left:auto;
-    }
-</style>
-
-<div class ="main" >
-
+<div class ="l-main" >
     <div class="landing-left">
-        <h3>Welcome to BIDBase</h3>
 
-        <h1> Bid, win & collect your favorite Art.</h1>
+        <h3 class="h1l">Welcome to BIDBase</h3>
+
+        <div class="typing">
+            <h1>Bid, Win & </h1>
+
+            <h1 style="display:flex; justify-content:center;">
+                <span class="text1"> Collect Your Favorite Art</span>
+                <span class="text2">Get Coupons Upon Purchase.</span>
+            </h1>
+        </div>
+
 
         <p>
             You are probably familiar with online auctions where the highest bid wins.
@@ -70,10 +25,11 @@
 
         </p>
 
-        <button class="bidbtn"><a href="/login">Start Bidding</a></button>
+        <a href="/login"><button class="bidbtn"> Start Bidding</button></a>
     </div>
 
-    <div class="right">
+    <div class="l-right">
+        <h3 class="h1r">Welcome to BIDBase</h3>
         <img src="/images/pics/BidPic.png"/>
     </div>
    

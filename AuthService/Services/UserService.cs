@@ -49,6 +49,16 @@ namespace AuthService.Services
             }
         }
 
+        public async Task<List<ApplicationUser>> GetAllUsers()
+        {
+            return await _context.ApplicationUsers.ToListAsync();
+        }
+
+        public async Task<ApplicationUser> GetUserById(string Id)
+        {
+            return await _context.ApplicationUsers.Where(x => x.Id == Id).FirstOrDefaultAsync();
+        }
+
         public async Task<LoginResponseDto> loginUser(LoginRequestDto loginRequestDto)
         {
             //a User with that username Exists
