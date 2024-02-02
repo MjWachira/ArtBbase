@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Migrations;
@@ -31,7 +32,9 @@ namespace OrderService.Controllers
             _responseDto = new ResponseDto();
         }
 
+
         [HttpPost("{BidId}")]
+        [Authorize]
         public async Task<ActionResult<ResponseDto>> PlaceOrder(MakeOrderDto dto, string BidId)
         {
             var UserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
@@ -43,11 +46,21 @@ namespace OrderService.Controllers
 
             var bid = await _bidService.GetBidById(BidId);
 
+
             if (string.IsNullOrWhiteSpace(bid.ArtName))
             {
                 _responseDto.Errormessage = "Items Not Found";
                 return NotFound(_responseDto);
             }
+
+
+            var checkOrder = await _orderService.GetOrderByBidId(new Guid(BidId));
+            if (checkOrder != null)
+            {
+                _responseDto.Errormessage = "Order already exists";
+                return _responseDto;
+            }
+
 
             var order = _mapper.Map<Orders>(dto);
 
@@ -64,7 +77,7 @@ namespace OrderService.Controllers
         }
 
         [HttpGet]
-
+        [Authorize]
         public async Task<ActionResult<ResponseDto>> GetUserOrders()
         {
             var UserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
@@ -82,7 +95,7 @@ namespace OrderService.Controllers
         }
 
         [HttpGet("{Id}")]
-
+        [Authorize]
         public async Task<ActionResult<ResponseDto>> GetOneOrder(Guid Id)
         {
 
@@ -93,7 +106,7 @@ namespace OrderService.Controllers
 
         }
         [HttpPost("Pay")]
-
+        [Authorize]
         public async Task<ActionResult<ResponseDto>> makePayments(StripeRequestDto dto)
         {
 
@@ -103,5 +116,61 @@ namespace OrderService.Controllers
             return Ok(_responseDto);
         }
 
+        [HttpPost("validate/{Id}")]
+
+        public async Task<ActionResult<ResponseDto>> validatePayment(Guid Id)
+        {
+
+            var res = await _orderService.ValidatePayments(Id);
+
+            if (res)
+            {
+                _responseDto.Result = res;
+                return Ok(_responseDto);
+            }
+
+            _responseDto.Errormessage = "Payment Failed!";
+            return BadRequest(_responseDto);
+        }
+
+        [HttpPut("{Id}")]
+        [Authorize]
+        public async Task<ActionResult<ResponseDto>> ApplyCoupon(Guid Id, string Code)
+        {
+            
+            var order = await _orderService.GetOrderById(Id);
+
+            if (order == null)
+            {
+                _responseDto.Errormessage = "Order Not Found";
+                return NotFound(_responseDto);
+            }
+            var coupon = await _couponService.GetCouponByCouponCode(Code);
+            if (coupon.CouponAmount == null)
+            {
+                _responseDto.Errormessage = "Coupon is not Valid";
+                return NotFound(_responseDto);
+            }
+
+            if (coupon.CouponMinAmount <= order.TotalAmount)
+            {
+                order.CouponCode = coupon.CouponCode;
+                order.Discount = coupon.CouponAmount;
+                await _orderService.saveChanges();
+                _responseDto.Result = "Code applied";
+                return Ok(_responseDto);
+            }
+            else
+            {
+                _responseDto.Errormessage = "Total amount is less that the minimum amount for this coupon";
+                return BadRequest(_responseDto);
+            }
+
+
+            //return Ok(_responseDto);
+
+        }
     }
+
 }
+

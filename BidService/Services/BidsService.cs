@@ -29,19 +29,38 @@ namespace BidService.Services
             return await _context.Bids.Where(b => b.BidderId == userId).ToListAsync();
         }
 
+        public async Task<List<Bid>> GetAllBids()
+        {
+            var bids = await _context.Bids.ToListAsync();
+
+            foreach (var bid in bids)
+            {
+                if (DateTime.Now > bid.StopTime && bid.Status == "Open")
+                {
+                    bid.Status = "Closed";
+                    _context.Entry(bid).State = EntityState.Modified;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return bids;
+        }
+
         public async Task<List<Bid>> GetMyWins(Guid userId)
         {
-            var MyWins = await _context.Bids
-            .Where(b => b.BidderId == userId)
-            .GroupBy(b => b.ArtId)
-            .Select(group =>
-                group.OrderByDescending(b => b.BidAmmount)
-                     .FirstOrDefault(b => b.BidderId == group.OrderByDescending(x => x.BidAmmount).First().BidderId))
-            .ToListAsync();
+            var highestBidAmounts = await _context.Bids
+                .GroupBy(b => b.ArtId)
+                .Select(g => g.Max(b => b.BidAmmount)) // Select the highest bid amount for each ArtId
+                .ToListAsync();
 
-            return MyWins;
+            var openBids = await _context.Bids
+                .Where(b => highestBidAmounts.Contains(b.BidAmmount) && b.BidderId == userId && !b.BidderId.Equals(Guid.Empty) && b.Status == "Closed")
+                .ToListAsync();
 
+            return openBids;
         }
+
 
         public async Task<Bid> GetOneBid(Guid Id)
         {
@@ -51,18 +70,29 @@ namespace BidService.Services
         public async Task<List<Bid>> HighestBidsPerItem(Guid userId)
         {
             var highestBids = await _context.Bids
-                .Where(b => b.BidderId == userId)
+                .Where(b => b.BidderId == userId) // Filter by the user ID
                 .GroupBy(b => b.ArtId)
                 .Select(g => g.OrderByDescending(b => b.BidAmmount).FirstOrDefault()) // Select the highest bid for each ArtId
                 .ToListAsync();
 
             return highestBids;
+
         }
         public async Task<string> DeleteBid(Bid art)
         {
             _context.Bids.Remove(art);
             await _context.SaveChangesAsync();
             return "Bid removed successfully";
+        }
+
+        public async Task<List<Bid>> HighestBidsPerArt()
+        {
+            var highestBids = await _context.Bids
+                .GroupBy(b => b.ArtId)
+                .Select(g => g.OrderByDescending(b => b.BidAmmount).FirstOrDefault()) // Select the highest bid for each ArtId
+                .ToListAsync();
+
+            return highestBids;
         }
     }
 }

@@ -26,6 +26,10 @@ window.ShowMessage = (type, message) => {
 
 
 }
+window.ShowAlert = function (type, message) {
+    // Define your alert implementation here
+    alert(message); // Example: Use the browser's native alert function
+};
 function toggleNav() {
     var x = document.getElementById("myTopnav");
     var icon = document.querySelector('.topnav a.icon');

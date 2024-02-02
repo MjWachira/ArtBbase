@@ -17,9 +17,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BidService", "BidService\Bi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderService", "OrderService\OrderService.csproj", "{9622E3A1-EE3A-4CBA-8346-0CCC17C5C441}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CategoryService", "CategoryService\CategoryService.csproj", "{B6CC8374-584B-4199-9FB6-7A679C4FB5CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CategoryService", "CategoryService\CategoryService.csproj", "{B6CC8374-584B-4199-9FB6-7A679C4FB5CB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CouponService", "CouponService\CouponService.csproj", "{87335D8D-ED75-4620-914F-BC6E45C89E7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Art.Gateway", "Art.Gateway\Art.Gateway.csproj", "{18D2E9B0-6865-422A-800A-D8EE7BF10D21}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{87335D8D-ED75-4620-914F-BC6E45C89E7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87335D8D-ED75-4620-914F-BC6E45C89E7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87335D8D-ED75-4620-914F-BC6E45C89E7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18D2E9B0-6865-422A-800A-D8EE7BF10D21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18D2E9B0-6865-422A-800A-D8EE7BF10D21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18D2E9B0-6865-422A-800A-D8EE7BF10D21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18D2E9B0-6865-422A-800A-D8EE7BF10D21}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

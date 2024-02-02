@@ -1,7 +1,7 @@
 ﻿using AuthService.Models.Dtos;
 using AuthService.Services.IServices;
 using AutoMapper;
-using BlogMessageBus;
+using ArtMessageBus;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

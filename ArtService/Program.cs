@@ -33,11 +33,11 @@ namespace ArtService
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             //base url
-            builder.Services.AddHttpClient("User", c => c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ServiceURl:AuthService")));
+            builder.Services.AddHttpClient("Category", c => c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ServiceURl:CategoryService")));
        
             //REG FOR DI
             builder.Services.AddScoped<IArt,ArtsService>();
-            builder.Services.AddScoped<IUser, UsersService>();
+            builder.Services.AddScoped<ICategory, CatService>();
 
             var app = builder.Build();
 

@@ -8,8 +8,9 @@
         public Guid BidderId { get; set; }
         public string? BidderName { get; set; }
         public double BidAmmount { get; set; }
-        public DateTime BidDate { get; set; }= DateTime.Now; 
-
+        public DateTime BidDate { get; set; }= DateTime.Now;
+        public DateTime StopTime { get; set; }
+        public string Status { get; set; } = "Open";
 
     }
 }

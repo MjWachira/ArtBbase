@@ -58,7 +58,7 @@ namespace CouponService.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<ResponseDto>> AddCoupon(AddCouponDto newCoupon)
         {
             var coupon = _mapper.Map<Models.Coupon>(newCoupon);
@@ -82,7 +82,7 @@ namespace CouponService.Controllers
         }
 
         [HttpPut("{Id}")]
-        [Authorize]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<ResponseDto>> updateCoupon(Guid Id, AddCouponDto UCoupon)
         {
             var coupon = await _couponService.GetCoupon(Id);

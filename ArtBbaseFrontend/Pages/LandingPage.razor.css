@@ -159,7 +159,7 @@
 }
 
     .text1::after, .text2::after {
-        content: "|";
+        content: " ";
         position: absolute;
         right: 0;
         animation: caret infinite;

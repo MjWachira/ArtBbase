@@ -4,6 +4,9 @@ using OrderService.Services.IServices;
 using OrderService.Data;
 using Microsoft.EntityFrameworkCore;
 using Stripe.Checkout;
+using Stripe;
+using Stripe.Climate;
+using ArtMessageBus;
 
 namespace OrderService.Services
 {
@@ -12,19 +15,27 @@ namespace OrderService.Services
         private readonly ApplicationDbContext _context;
         private readonly IUser _userService;
         private readonly IBid _bidService;
-        //private readonly IMessageBus _messageBUs;
+        private readonly IMessageBus _messageBus;
 
-        public OrdersService(IUser userService, IBid bidService, ApplicationDbContext context)
+        public OrdersService(IUser userService, IBid bidService, ApplicationDbContext context,
+            IMessageBus messageBus)
         {
             _userService = userService;
             _context = context;
             _bidService = bidService;
+            _messageBus = messageBus;
+           
 
         }
 
         public async Task<List<Orders>> GetAllOrders(Guid userId)
         {
             return await _context.Orders.Where(b=>b.BidderId == userId).ToListAsync();
+        }
+        //
+        public async Task<Orders> GetOrderByBidId(Guid BidId)
+        {
+            return await _context.Orders.Where(b => b.BidId == BidId).FirstOrDefaultAsync();
         }
 
         public async Task<Orders> GetOrderById(Guid Id)
@@ -57,33 +68,32 @@ namespace OrderService.Services
                     ProductData = new SessionLineItemPriceDataProductDataOptions()
                     {
                         Name = bid.ArtName,
-                        Images = new List<string> { "https://imgs.search.brave.com/av4uh1BAXrv7q2gkJt-E709vrIz3mB1-wrcPDtDyZNI/rs:fit:500:0:0/g:ce/aHR0cHM6Ly93d3cu/ZXhwZXJ0YWZyaWNh/LmNvbS9pbWFnZXMv/YXJlYS8xODI5X2wu/anBn" }
+                        Images = new List<string> { "https://cdn.pixabay.com/photo/2016/02/27/12/40/sculpture-1225487_1280.jpg" }
                     }
                 },
                 Quantity = 1
 
-
             };
 
-            /*
+         
             options.LineItems.Add(item);
+            
+         //discount
 
-            //discount
+         var DiscountObj = new List<SessionDiscountOptions>()
+         {
+             new SessionDiscountOptions()
+             {
+                 Coupon=order.CouponCode
+             }
+         };
 
-            var DiscountObj = new List<SessionDiscountOptions>()
-            {
-                new SessionDiscountOptions()
-                {
-                    Coupon=booking.CouponCode
-                }
-            };
+         if (order.Discount > 0)
+         {
+             options.Discounts = DiscountObj;
 
-            if (booking.Discount > 0)
-            {
-                options.Discounts = DiscountObj;
-
-            }
-            */
+         }
+         
             var service = new SessionService();
             Session session = service.Create(options);
 
@@ -108,14 +118,57 @@ namespace OrderService.Services
             return "Order Placed Successfully";
         }
 
-        public Task saveChanges()
+        public async Task saveChanges()
         {
-            throw new NotImplementedException();
+            await _context.SaveChangesAsync();
         }
 
-        public Task<bool> ValidatePayments(Guid OrderId)
+        public async Task<bool> ValidatePayments(Guid OrderId)
         {
-            throw new NotImplementedException();
+            var order = await _context.Orders.Where(x => x.Id == OrderId).FirstOrDefaultAsync();
+
+            var service = new SessionService();
+            Session session = service.Get(order.StripeSessionId);
+
+            PaymentIntentService paymentIntentService = new PaymentIntentService();
+
+            PaymentIntent paymentIntent = paymentIntentService.Get(session.PaymentIntentId);
+
+            if (paymentIntent.Status == "succeeded")
+            {
+                //the payment was success
+
+                order.Status = "Paid";
+                order.PaymentIntent = paymentIntent.Id;
+                await _context.SaveChangesAsync();
+
+                
+                var user = await _userService.GetUserById(order.BidderId.ToString());
+
+                if (string.IsNullOrWhiteSpace(user.Email))
+                {
+                    return false;
+                }
+                else
+                {
+                    var email = new MailDto()
+                    {
+                        OrderId= order.Id,
+                        OrderAmount=order.TotalAmount,
+                        Name = user.Name,
+                        Email = user.Email
+
+                    };
+                    await _messageBus.PublishMessage(email, "orderplaced");
+                }
+
+                // Send an Email to User
+                //Reward the user with some Bonus Points 
+                return true;
+             
+            }
+            return false;
         }
     }
+    
 }

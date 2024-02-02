@@ -6,6 +6,8 @@ namespace ArtService.Services.IServices
     public interface IArt
     {
         Task<List<Art>> GetAllArts();
+        Task<List<Art>> GetOpenArts();
+        Task<List<Art>> GetClosedArts();
         Task<Art> GetOneArt(Guid Id);
         Task<List<Art>> GetMyArts(Guid userId);
         Task<string> AddArt(Art art);

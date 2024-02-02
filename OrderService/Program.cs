@@ -1,3 +1,4 @@
+using ArtMessageBus;
 using Microsoft.EntityFrameworkCore;
 using OrderService.Data;
 using OrderService.Extensions;
@@ -31,6 +32,7 @@ builder.Services.AddScoped<IBid, BidsService>();
 builder.Services.AddScoped<IUser, UsersService>();
 builder.Services.AddScoped<IOrder, OrdersService>();
 builder.Services.AddScoped<ICoupon, CouponsService>();
+builder.Services.AddScoped<IMessageBus, MessageBus>();
 
 //
 builder.Services.AddHttpClient("User", c => c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ServiceURl:AuthService")));

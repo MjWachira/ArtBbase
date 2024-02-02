@@ -10,24 +10,29 @@
     <div class="right">
 
         <div class="logform">
-            <h3>Register</h3>
+            <h3>Welcome</h3>
+
+            <div>
+
+  
+            </div>
 
             <label for="names">Full Names:</label>
-            <input type="text" @bind=newUser.Name id="names" name="names" required>
+            <input type="text" @bind="newUser.Name" id="names" name="names" required>
 
             <label for="email">Email:</label>
-            <input type="email" @bind=newUser.Email id="email" name="email" required>
+            <input type="email" @bind="newUser.Email" id="email" name="email" required>
 
             <label for="phone">Phone Number:</label>
-            <input type="number" @bind=newUser.PhoneNumber id="phone" name="phone" required>
+            <input type="number" @bind="newUser.PhoneNumber" id="phone" name="phone" required>
 
             <label for="password">Password:</label>
-            <input type="password" @bind=newUser.Password id="password" name="password" required>
+            <input type="password" @bind="newUser.Password" id="password" name="password" required>
 
-            <label for="password">Comfirm Password:</label>
-            <input type="password" id="password" name="password" required>
+            <label for="confirmPassword">Confirm Password:</label>
+            <input type="password" @bind="newUser.Password" id="confirmPassword" name="confirmPassword" required>
 
-            <button type="submit" @onclick =regUser  class="loginbtn">Register</button>
+            <button type="submit" @onclick="regUser" class="loginbtn">Register</button>
 
             <p>Already a user?<a href="/Login">Login Here</a></p>
 
@@ -42,8 +47,13 @@
 
     private async Task regUser()
     {
+        if (newUser.Password != newUser.CPassword)
+        {
+         
+            return;
+        }
+
         var res = await authInterface.Register(newUser);
         await jsRuntime.InvokeVoidAsync("ShowAlert", "success", res.Result);
-
     }
 }

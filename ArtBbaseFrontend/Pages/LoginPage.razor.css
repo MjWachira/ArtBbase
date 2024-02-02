@@ -20,6 +20,9 @@
     padding: 5%;
     justify-content: center;
 }
+.error{
+    color:red;
+}
 
 .logform {
     display: flex;
@@ -34,13 +37,22 @@
     border-radius: 10px;
 }
 
-    .logform input {
-        outline: none;
-        border: none;
-        height: 25px;
-        border-radius: 10px;
-        padding: 5px;
-    }
+InputText {
+    outline: none;
+    border: none;
+    height: 25px;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+.logform .inputs {
+    outline: none;
+    border: none;
+    height: 25px;
+    border-radius: 10px;
+    padding: 5px;
+}
+
 
 .loginbtn {
     background-color: #CB4427;
@@ -51,6 +63,14 @@
     padding: 10px;
     margin: 10px;
     cursor: pointer;
+    transition: 0.5s;
+}
+.loginbtn:hover {
+    background-color: transparent;
+    color: #CB4427;
+    border: solid 1px;
+    border-color: #CB4427;
+    transition: 0.5s;
 }
 
 .logform a {
