@@ -34,15 +34,15 @@ namespace OrderService.Controllers
 
 
         [HttpPost("{BidId}")]
-        [Authorize]
+        //[Authorize]
         public async Task<ActionResult<ResponseDto>> PlaceOrder(MakeOrderDto dto, string BidId)
         {
-            var UserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            /*var UserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             if (UserId == null)
             {
                 _responseDto.Errormessage = "Please login";
                 return Unauthorized(_responseDto);
-            }
+            }*/
 
             var bid = await _bidService.GetBidById(BidId);
 
@@ -65,7 +65,8 @@ namespace OrderService.Controllers
             var order = _mapper.Map<Orders>(dto);
 
             order.BidId = bid.Id;
-            order.BidderId = new Guid(UserId);
+            order.ArtName= bid.ArtName;
+            order.ArtImage= bid.ArtImage;
             order.TotalAmount = bid.BidAmmount;
           
 
@@ -76,18 +77,18 @@ namespace OrderService.Controllers
             return Ok(_responseDto);
         }
 
-        [HttpGet]
-        [Authorize]
-        public async Task<ActionResult<ResponseDto>> GetUserOrders()
+        [HttpGet("User/{UserId}")]
+        //[Authorize]
+        public async Task<ActionResult<ResponseDto>> GetUserOrders(Guid UserId)
         {
-            var UserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            //var UserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             if (UserId == null)
             {
                 _responseDto.Errormessage = "Please login";
                 return Unauthorized(_responseDto);
             }
 
-            var res = await _orderService.GetAllOrders(new Guid(UserId));
+            var res = await _orderService.GetAllOrders((UserId));
             _responseDto.Result = res;
             return Ok(_responseDto);
 
@@ -95,7 +96,7 @@ namespace OrderService.Controllers
         }
 
         [HttpGet("{Id}")]
-        [Authorize]
+        //[Authorize]
         public async Task<ActionResult<ResponseDto>> GetOneOrder(Guid Id)
         {
 
@@ -106,7 +107,7 @@ namespace OrderService.Controllers
 
         }
         [HttpPost("Pay")]
-        [Authorize]
+        //[Authorize]
         public async Task<ActionResult<ResponseDto>> makePayments(StripeRequestDto dto)
         {
 
@@ -134,7 +135,7 @@ namespace OrderService.Controllers
         }
 
         [HttpPut("{Id}")]
-        [Authorize]
+       // [Authorize]
         public async Task<ActionResult<ResponseDto>> ApplyCoupon(Guid Id, string Code)
         {
             

@@ -30,27 +30,11 @@ namespace ArtService.Controllers
             _response = new ResponseDto();
         }
 
-        [HttpPost("Id")]
-        [Authorize(Roles ="admin,seller")]
-        public async Task<ActionResult<ResponseDto>> AddArt(AddArtDto newArt, string Id)
+        [HttpPost]
+       // [Authorize(Roles ="admin,seller")]
+        public async Task<ActionResult<ResponseDto>> AddArt(AddArtDto newArt)
         {
-            var UserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            if (UserId == null)
-            {
-                _response.Errormessage = "Please login to add art";
-                return Unauthorized(_response);
-            }
-
-            var category =await _catservice.GetCatById(Id);
-            if(string.IsNullOrEmpty(category.CategoryName))
-            {
-                _response.Errormessage = "Category Not Found";
-                return NotFound(_response);
-            }
-
             var art = _mapper.Map<Art>(newArt);
-            art.SellerId = Guid.Parse(UserId);
-            art.Category = category.CategoryName;
             var res = await _artservice.AddArt(art);
             _response.Result = res;
             return Created("", _response);
@@ -91,7 +75,7 @@ namespace ArtService.Controllers
             _response.Result = arts;
             return Ok(_response);
         }
-        [HttpGet("userArt{UserId}")]
+        [HttpGet("userArt/{UserId}")]
         public async Task<ActionResult<ResponseDto>> UserArts(Guid UserId)
         {
   
@@ -110,7 +94,7 @@ namespace ArtService.Controllers
         }
 
         [HttpPut("{Id}")]
-        [Authorize(Roles = "admin,seller")]
+        //[Authorize(Roles = "admin,seller")]
         public async Task<ActionResult<ResponseDto>> EdiArt(AddArtDto eArt, Guid Id)
         {
             var art = await _artservice.GetOneArt(Id);
@@ -127,7 +111,7 @@ namespace ArtService.Controllers
         }
 
         [HttpDelete("{Id}")]
-        [Authorize(Roles = "admin,seller")]
+        //[Authorize(Roles = "admin,seller")]
         public async Task<ActionResult<ResponseDto>> DeleteArt(Guid Id)
         {
             var art = await _artservice.GetOneArt(Id);
@@ -139,6 +123,20 @@ namespace ArtService.Controllers
             var res = await _artservice.DeleteArt(art);
             _response.Result = res;
             return Ok(_response);
+        }
+        [HttpPost("UpdateHighestBid")]
+        public async Task<IActionResult> UpdateHighestBid(Guid artId, double newHighestBid)
+        {
+            try
+            {
+                var result = await _artservice.UpdateHighestBid(artId, newHighestBid);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it accordingly
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
         }
     }
 }

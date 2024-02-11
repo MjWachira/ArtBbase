@@ -25,7 +25,7 @@ namespace CategoryService.Controllers
         }
 
         [HttpPost]
-        [Authorize (Roles = "admin")]
+       // [Authorize (Roles = "admin")]
         public async Task<ActionResult<ResponseDto>> AddCategory(AddCategoryDto newCategory)
         {
             var art = _mapper.Map<Category>(newCategory);
@@ -50,7 +50,7 @@ namespace CategoryService.Controllers
             return Ok(_response);
         }
         [HttpPut("{Id}")]
-        [Authorize(Roles = "admin")]
+        //[Authorize(Roles = "admin")]
         public async Task<ActionResult<ResponseDto>> EdiArt(AddCategoryDto edit, Guid Id)
         {
             var category = await _categoryService.GetCategory(Id);
@@ -67,7 +67,7 @@ namespace CategoryService.Controllers
         }
 
         [HttpDelete("{Id}")]
-        [Authorize(Roles = "admin")]
+        //[Authorize(Roles = "admin")]
         public async Task<ActionResult<ResponseDto>> Delet(Guid Id)
         {
             var category = await _categoryService.GetCategory(Id);

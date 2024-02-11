@@ -1,0 +1,64 @@
+﻿
+@inject IJSRuntime JSRuntime
+
+
+<Nav>
+    <div class="left">
+        <span class="ham" @onclick="OpenNav">☰</span>
+
+        <img class="logo" src="/images/pics/ArtBbase.png" /> 
+        <a class="home" href="admin">Home</a>
+        <a href="admin">How It Works</a>
+
+    </div>
+  <div class="right">
+        
+      <a href="Login"><button class="btn">Account</button></a>
+  </div>
+</Nav>
+<div id="main-content" style="@($"margin-left: {mainContentMargin}px;")">
+</div>
+
+
+<div id="sidebar" class="sidebar" style="@($"width: {sidebarWidth}px;")">
+
+    <div class="img-holder">
+        <a href="javascript:void(0)" class="close-btn" @onclick="CloseNav">×</a>
+        <img src="/images/pics/Monalisa.png" />
+        <h5 class="" style="margin-top:15px;"> Admin</h5>
+    </div>
+
+    <div class="buyer">
+        <a href="admin"><button>Art</button></a>
+        <a href="categories"><button>Category</button></a>
+        <a href="Coupons"><button> Coupon</button></a>
+        <a href="adminusers"><button>Users</button></a>
+        <a href="adminwallet"><button>My Wallet</button></a>
+
+    </div>
+
+    <div>
+        <a href="/"><button>Logout</button></a>
+    </div>
+   
+</div>
+
+
+
+@code {
+    private int sidebarWidth = 0;
+    private int mainContentMargin = 0;
+
+    private void OpenNav()
+    {
+        sidebarWidth = 180;
+        mainContentMargin = 180;
+
+    }
+
+    private void CloseNav()
+    {
+        sidebarWidth = 0;
+        mainContentMargin = 0;
+    }
+}

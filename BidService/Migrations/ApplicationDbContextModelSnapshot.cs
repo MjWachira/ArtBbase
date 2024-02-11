@@ -31,6 +31,10 @@ namespace BidService.Migrations
                     b.Property<Guid>("ArtId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("ArtImage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ArtName")
                         .HasColumnType("nvarchar(max)");
 
@@ -45,6 +49,9 @@ namespace BidService.Migrations
 
                     b.Property<string>("BidderName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("HighestBid")
+                        .HasColumnType("float");
 
                     b.Property<string>("Status")
                         .IsRequired()

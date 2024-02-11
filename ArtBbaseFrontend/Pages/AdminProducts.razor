@@ -1,290 +1,141 @@
 ﻿@page "/adminproducts"
-<LayoutAdmin></LayoutAdmin>
+
+
+@using System.Security.Claims;
+@inject IJSRuntime jsRuntime
+@inject IArt artInterface
+@inject NavigationManager navigationManager;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
+
+<MyAdminLayout></MyAdminLayout>
+
+
 <style>
- .app{
-        margin-left: 14%;
-        padding: 5px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 15px;
-       
-    }
-
-    .topon{
-        margin-top: 61px;
-    }
-    .top-bid{
-        display: flex;
-        flex-direction: column;
-        width:95%;
-        background-color: white;
-        padding:20px;
-        border-radius:10px;
-        margin-right:auto;
-        margin-left:auto;
-        height:30%;
-        
-        
-    }
-    .top-bid img{
-        width:100%;
-        height:50%;
-
-    }
-
-    .top-details{
-        display:flex;
-        justify-content:space-between;
-        padding-right:10px;
-        padding-left: 10px;
-        margin-top:-50px;
-        
-    }
-
-    .top-left{
-        width:45%;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        background-color: rgba(255, 255, 255, 0.7);
-        padding:2%;
-        border-radius:10px;
-        justify-content: space-between;
-    }
-
-    .top-right{
-        width: 45%;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        background-color: rgba(255, 255, 255, 0.7);
-        padding: 2%;
-        border-radius: 10px;
-        align-items: start;
-        justify-content: space-between;
-    }
-    .btn-view{
-        background-color:black;
-        color:white;
-        width:90%;
-        padding:5px;
-        height:25px;
-        border-radius:5px;
-    }
-
-    .app input {
-        border:none;
-        outline:none;
-        border: solid 1px;
-        border-color: #CB4427;
-        width: 90%;
-        padding:5px;
-        border-radius:10px;
-        
-    }
-
-    .btn-close {
-
-        border: none;
-        outline: none;
-        border: solid 1px;
-        border-color: #CB4427;
-        width: 90%;
-        padding: 5px;
-        border-radius: 10px;
-    }
-
-    .btn-bid{
-        background-color: #CB4427;
-        border: none;
-        width: 90%;
-        padding: 5px;
-        height: 25px;
-        border-radius: 5px;
-        color: white;
-
-    }
-
-    .app p{
-        color: #CB4427;
-        font-weight:bold;
-    }
-
-    .bid-item {
-        display: flex;
-        flex-direction: column;
-        width: 350px;
-        background-color: white;
-        padding: 2px;
-        border-radius: 10px;
+    .topnav {
+        margin-top: 51px;
         margin-right: auto;
         margin-left: auto;
-        height: 30%;
-        margin:10px;
+        color: #CB4427
     }
 
-        .bid-img img {
-            width: 100%;
-            height: 350px;
-            border-radius:10px;
+        .topnav button {
+            background-color: white;
+            color: #CB4427;
+            border: solid 1px;
+            border-color: #CB4427;
+            height: 35px;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px;
+            transition: 0.5s;
         }
 
-    .bid-details {
-        display: flex;
-        justify-content: space-between;
-        padding-right: 10px;
-        padding-left: 10px;
-        margin-top: -50px;
-        background-color: rgba(255, 255, 255, 0.7);
-        border-radius:10px;
-    }
+            .topnav button:hover {
+                background-color: black;
+                color: white;
+                cursor: pointer;
+                transition: 0.5s;
+            }
 
-    .bid-left {
-        width: 50%;
-       
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        padding: 2px;
-        border-radius: 10px;
-        justify-content:space-between;
-    }
-
-    .bid-right {
-        width: 50%;
-        display: flex;
-       
-        flex-direction: column;
-        gap: 10px;
-        padding: 2px;
-        padding: 2%;
-        border-radius: 10px;
-        align-items: start;
-        justify-content:space-between;
-    }
-
-    .items{
-        display:flex;
-        flex-wrap:wrap;
-        align-items:center;
-        justify-content:center;
-    }
-    .search{
-        width:95%;
-        background-color:white;
-        justify-content:space-evenly;
-        height:50px;
-        margin-right:auto;
-        margin-left:auto;
-        padding:15px;
-        margin-top:10px;
-        display:flex;
-
+    .topon {
+        margin-right: auto;
+        margin-left: auto;
+        color: #CB4427
     }
 </style>
-
 <div class="app">
-    <h3 class="topon">Top On Auction</h3>
-    <div class="top-bid">
-       
-        <div class="topb-img">
-            <img src="/images/pics/3in1.png" />
-        </div>
-        <div class="top-details">
-
-            <div class="top-left">
-                <h4> Three In One Art </h4>
-                <span style="display:flex;">Higest Bid: <p> Ksh 31,000</p></span>
-                <span style="display:flex;">Start Price: <p>Ksh 30,000</p></span>
-                <a href="buyerviewitem"><button class="btn-view">Edit Item</button></a>
-            </div>
-            <div class="top-right">
-                <h4>01D:05H:10M:30S</h4>
-                <p style="background-color:#FFE9E4; Padding:4px;">Biding Open</p>
-                <button class="btn-close">Close Bid</button>
-                <button class="btn-bid">Delete</button>
-            </div>
-        </div>
+    <div class="topnav">
+        <a href="admin"><button>All Auctions</button> </a>
+        <a href="adminproducts"><button>My Auctions</button> </a>
+        <a href="art"><button>Add Auctions</button> </a>
     </div>
+    <h3 class="topon">Manage My Art On Auction</h3>
 
-    
 
-    <div class="search"> 
-        <div style="width:60%">
-            <h3>Gallary on Auction</h3> 
-        </div>
-        <div>
-            <span>Search - Filter</span>
-        </div>
-        <div>
-            <input type="text" />
-         </div>
-    </div>
 
-    <div class="items">
-        <div class="bid-item">
-            <div class="bid-img">
-                <img src="/images/pics/Monalisa.png" />
-            </div>
-            <div class="bid-details">
-                <div class="bid-left">
-                    <h4> Three In One Art </h4>
-                    <span style="display:flex;">Higest Bid: <p> Ksh 31,000</p></span>
-                    <span style="display:flex;">Start Price: <p>Ksh 30,000</p></span>
-                    <a><button class="btn-view">View Item</button></a>
-                </div>
-                <div class="bid-right">
-                    <h4>01D:05H:10M:30S</h4>
-                    <p style="background-color:#FFE9E4; Padding:4px;">Biding Open</p>
-                    <button class="btn-close">Close Bid</button>
-                    <button class="btn-bid">Bid Now</button>
-                </div>
-            </div>
-        </div>
-        <div class="bid-item">
-            <div class="bid-img">
-                <img src="/images/pics/Monalisa.png" />
-            </div>
-            <div class="bid-details">
-                <div class="bid-left">
-                    <h4> Three In One Art </h4>
-                    <span style="display:flex;">Higest Bid: <p> Ksh 31,000</p></span>
-                    <span style="display:flex;">Start Price: <p>Ksh 30,000</p></span>
-                    <a><button class="btn-view">View Item</button></a>
-                </div>
-                <div class="bid-right">
-                    <h4>01D:05H:10M:30S</h4>
-                    <p style="background-color:#FFE9E4; Padding:4px;">Biding Open</p>
-                    <button class="btn-close">Close Bid</button>
-                    <button class="btn-bid">Bid Now</button>
-                </div>
-            </div>
-        </div>
-        <div class="bid-item">
-            <div class="bid-img">
-                <img src="/images/pics/Monalisa.png" />
-            </div>
-            <div class="bid-details">
-                <div class="bid-left">
-                    <h4> Three In One Art </h4>
-                    <span style="display:flex;">Higest Bid: <p> Ksh 31,000</p></span>
-                    <span style="display:flex;">Start Price: <p>Ksh 30,000</p></span>
-                    <a><button class="btn-view">View Item</button></a>
-                </div>
-                <div class="bid-right">
-                    <h4>01D:05H:10M:30S</h4>
-                    <p style="background-color:#FFE9E4; Padding:4px;">Biding Open</p>
-                    <button class="btn-close">Close Bid</button>
-                    <button class="btn-bid">Bid Now</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
+    @if (iSLoading)
+    {
+        <p><i>Loading...</i></p>
+    }
+    else
+    {
 
-    
+        @if (arts.Count > 0)
+        {
+            <div class="items">
+                @foreach (var art in arts)
+                {
+                    <div class="bid-item">
+                        <div class="bid-img">
+                            <img src="@art.Image" />
+                        </div>
+                        <div class="bid-details">
+                            <div class="bid-left">
+                                <h4> @art.Name </h4>
+                                <span style="display:flex;">Higest Bid: <p>Ksh @art.HighestBid </p></span>
+                                <span style="display:flex;">Start Price: <p>Ksh @art.StartPrice</p></span>
+                                <a href="/art/@art.Id"><button class="btn-view">Edit</button></a>
+                            </div>
+                            <div class="bid-right">
+                                <h4>@GetRemainingTime(art.StopTime)</h4>
+                                <p style="Padding:4px;">Biding @art.Status</p>
+                                <button class="btn-close">Close Bid</button>
+                                <button class="btn-bid" @onclick="@(()=>deleteArt(art.Id))">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p><i>No Art Found!!</i></p>
+        }
+    }
+
 </div>
+
 @code {
+    private bool iSLoading = true;
+    private List<ArtDto> arts = new List<ArtDto>();
+    private Dictionary<Guid, BidDto> highestBids = new Dictionary<Guid, BidDto>();
+    [CascadingParameter]
+    public Task<AuthenticationState> _authState { get; set; }
+    private string UserId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        UserId = await jsRuntime.InvokeAsync<string>("localStorage.getItem", "UserId");
+        arts = await artInterface.GetUserArtsAsync(new Guid(UserId));
+        iSLoading = false;
+
+        // Start the timer to update the UI every second
+        var timer = new System.Threading.Timer(async (_) =>
+        {
+            await InvokeAsync(() => StateHasChanged());
+        }, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+    }
+
+
+    private async Task deleteArt(Guid id)
+    {
+        var res = await artInterface.DeleteArt(id);
+        arts = await artInterface.GetArtsAsync();
+    }
+    private string GetRemainingTime(DateTime expiresAt)
+    {
+        var remainingTime = expiresAt - DateTime.Now;
+        if (remainingTime.TotalSeconds < 0)
+        {
+            return "00d 00h 00m 00s";
+        }
+        else
+        {
+            return $"{remainingTime.Days}d {remainingTime.Hours}h {remainingTime.Minutes}m {remainingTime.Seconds}s";
+        }
+    }
 
 }
+
+

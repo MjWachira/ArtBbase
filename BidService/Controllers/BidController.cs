@@ -26,15 +26,16 @@ namespace BidService.Controllers
         }
 
         [HttpPost("{Id}")]
-        [Authorize]
+        // [Authorize]
         public async Task<ActionResult<ResponseDto>> AddBid(AddBidDto addBid, string Id)
         {
-            var UserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            if (UserId == null)
-            {
-                _response.Errormessage = "Please login to make a bid";
-                return Unauthorized(_response);
-            }
+            // var UserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            // if (UserId == null)
+            // {
+            //     _response.Errormessage = "Please login to make a bid";
+            //     return Unauthorized(_response);
+            // }
+
             var art = await _artservice.GetArtById(Id);
             if (string.IsNullOrWhiteSpace(art.Description))
             {
@@ -48,25 +49,33 @@ namespace BidService.Controllers
                 return _response;
             }
 
-            
-
             var bid = _mapper.Map<Bid>(addBid);
-            bid.BidderId = new Guid(UserId);
             bid.ArtId = art.Id;
             bid.ArtName = art.Name;
             bid.StopTime = art.StopTime;
+            bid.ArtImage = art.Image;
+            bid.HighestBid = addBid.BidAmmount;
 
             if (bid.BidAmmount < art.StartPrice)
             {
-                _response.Errormessage = $"Current bid is ${art.StartPrice} make a higher bid";
+                _response.Errormessage = $"Current bid is Ksh{art.StartPrice}, make a higher bid";
                 return _response;
             }
 
+            // Check if the bid amount is less than or equal to the highest bid
+            var highestBid = await _bidservice.GetArtHighBid(art.Id);
+
+            if (bid.BidAmmount <= highestBid?.BidAmmount)
+            {
+                _response.Errormessage = $"Highest bid is Ksh{highestBid?.BidAmmount}, make a higher bid";
+                return _response;
+            }
 
             var res = await _bidservice.AddBid(bid);
             _response.Result = res;
             return Ok(_response);
         }
+
         [HttpGet("Art{Id}")]
         public async Task<ActionResult<ResponseDto>> ArtBids(string Id)
         {
@@ -84,18 +93,19 @@ namespace BidService.Controllers
             return Ok(_response);
         }
 
-        [HttpGet("UserBids")]
-        [Authorize]
-        public async Task<ActionResult<ResponseDto>> AllMyBids()
+        [HttpGet("UserBids/{UserId}")]
+       // [Authorize]
+        public async Task<ActionResult<ResponseDto>> AllMyBids(Guid UserId)
         {
             await _bidservice.GetAllBids();
-            var UserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            // var UserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            //var UserId = Id;
             if (UserId == null)
             {
                 _response.Errormessage = "Please login to make a bid";
                 return Unauthorized(_response);
             }
-            var bids = await _bidservice.GetMyBids(new Guid(UserId));
+            var bids = await _bidservice.GetMyBids(UserId);
             _response.Result = bids;
             return Ok(_response);
         }
@@ -107,28 +117,28 @@ namespace BidService.Controllers
             _response.Result = bids;
             return Ok(_response);
         }
-        [HttpGet("MyHighestBids")]
-        [Authorize]
-        public async Task<ActionResult<ResponseDto>> HighestBid()
+        [HttpGet("MyHighestBids/{UserId}")]
+       // [Authorize]
+        public async Task<ActionResult<ResponseDto>> HighestBid( Guid UserId)
         {
             await _bidservice.GetAllBids();
-            var UserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+           // var UserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             if (UserId == null)
             {
                 _response.Errormessage = "Please login to make a bid";
                 return Unauthorized(_response);
             }
-            var bids = await _bidservice.HighestBidsPerItem(new Guid(UserId));
+            var bids = await _bidservice.HighestBidsPerItem((UserId));
             _response.Result = bids;
             return Ok(_response);
         }
 
-        [HttpGet("MyWins")]
-        [Authorize]
-        public async Task<ActionResult<ResponseDto>> MyWins()
+        [HttpGet("MyWins/{UserId}")]
+        //[Authorize]
+        public async Task<ActionResult<ResponseDto>> MyWins(string UserId)
         {
             await _bidservice.GetAllBids();
-            var UserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            //var UserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             if (UserId == null)
             {
                 _response.Errormessage = "Please login";
@@ -147,8 +157,18 @@ namespace BidService.Controllers
             _response.Result = bids;
             return Ok(_response);
         }
+
+        [HttpGet("Art/{Id}")]
+        public async Task<ActionResult<ResponseDto>> OneHighBid(string Id)
+        {
+            await _bidservice.GetAllBids();
+            var bids = await _bidservice.GetArtHighBid(new Guid(Id));
+            _response.Result = bids;
+            return Ok(_response);
+        }
+
         [HttpDelete("{Id}")]
-        [Authorize]
+        //[Authorize]
         public async Task<ActionResult<ResponseDto>> DeleteBid(Guid Id)
         {
             var bid = await _bidservice.GetOneBid(Id);

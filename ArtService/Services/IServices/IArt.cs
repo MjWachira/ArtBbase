@@ -13,5 +13,6 @@ namespace ArtService.Services.IServices
         Task<string> AddArt(Art art);
         Task<string> UpdateArt();
         Task<string> DeleteArt(Art art);
+        Task<string> UpdateHighestBid(Guid artId, double newHighestBid);
     }
 }

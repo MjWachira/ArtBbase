@@ -31,6 +31,13 @@ namespace OrderService.Migrations
                     b.Property<Guid>("ArtId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("ArtImage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ArtName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("BidId")
                         .HasColumnType("uniqueidentifier");
 

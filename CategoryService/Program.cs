@@ -23,6 +23,16 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("myconnection"));
 });
+
+//Set cors policy
+builder.Services.AddCors(options => options.AddPolicy("catpolicy", build =>
+{
+    //build.WithOrigins("https://localhost:7257");
+    build.AllowAnyOrigin();
+    build.AllowAnyHeader();
+    build.AllowAnyMethod();
+}));
+
 //Automapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -33,11 +43,16 @@ builder.Services.AddScoped<ICategory , CategoryServices>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Configure the HTTP request pipeline.
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    if (!app.Environment.IsDevelopment())
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "AUTH API");
+        c.RoutePrefix = string.Empty;
+    }
+});
 
 app.UseMigrations();
 
@@ -46,6 +61,8 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseCors("catpolicy");
 
 app.MapControllers();
 

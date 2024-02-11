@@ -1,0 +1,145 @@
+﻿@page "/categories"
+
+@using System.Security.Claims;
+@inject ICategory categoryInterface
+@inject NavigationManager navigationManager;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
+<MyAdminLayout></MyAdminLayout>
+<style>
+    .app{
+        width:99%;
+    }
+    .topnav {
+        margin-top: 51px;
+        margin-right: auto;
+        margin-left: auto;
+        color: #CB4427
+    }
+    .topnav button{
+            background-color: white;
+            color: #CB4427;
+            border: solid 1px;
+            border-color: #CB4427;
+            height: 35px;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px;
+            transition: 0.5s;
+    }
+    .topnav button:hover{
+                background-color: black;
+                color: white;
+                cursor: pointer;
+                transition: 0.5s;
+    }
+
+    .topon {
+        margin-right: auto;
+        margin-left: auto;
+        color: #CB4427;
+        margin:5px;
+        
+    }
+
+    .category-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .category-card {
+        width: calc(33.33% - 20px); /* Three cards per row */
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+    .category-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .category-details {
+        padding: 15px;
+    }
+
+    .category-title {
+        margin-bottom: 10px;
+    }
+
+    .category-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+</style>
+<div>
+    a
+</div>
+<div class="app">
+    <div class="topnav">
+        <a href="categories"><button>All Categories</button> </a>
+        <a href="category"><button>Add a Category</button> </a>
+    </div>
+    <h3 class="topon">Manage Categories </h3>
+</div>
+
+@if (iSLoading)
+{
+    <p><i>Loading...</i></p>
+}
+else
+{
+    @if (categories.Count > 0)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Coupon Code</th>
+                    <th scope="col">Coupon Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var category in categories)
+                {
+                    <tr>
+                        <th scope="row">@category.Id</th>
+                        <td>@category.CategoryImage</td>
+                        <td>@category.CategoryName</td>
+
+                        <td>
+                            <a class="btn btn-primary" href="/category/@category.Id"><i class="bi bi-pencil-square"></i> Edit</a>
+                            <button class="btn btn-danger" @onclick="@(()=>deleteCategory(category.Id))"><i class="bi bi-x-octagon"></i> Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p><i>No Categories Found!!</i></p>
+    }
+}
+
+@code {
+    private bool iSLoading = true;
+    private List<CategoryDto> categories = new List<CategoryDto>();
+    [CascadingParameter]
+    public Task<AuthenticationState> _authState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        categories = await categoryInterface.GetCategoriesAsync();
+        iSLoading = false;
+    }
+
+    private async Task deleteCategory(Guid id)
+    {
+        var res = await categoryInterface.DeleteCategory(id);
+        categories = await categoryInterface.GetCategoriesAsync();
+    }
+}

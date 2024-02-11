@@ -1,0 +1,197 @@
+﻿@page "/category"
+@page "/category/{Id}"
+
+@attribute [Authorize]
+@inject NavigationManager navigationManager;
+@inject ICategory categoryInterface;
+
+<MyAdminLayout></MyAdminLayout>
+<style>
+    .app {
+        width: 99%;
+    }
+
+    .topnav {
+        margin-top: 51px;
+        margin-right: auto;
+        margin-left: auto;
+        color: #CB4427
+    }
+
+        .topnav button {
+            background-color: white;
+            color: #CB4427;
+            border: solid 1px;
+            border-color: #CB4427;
+            height: 35px;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px;
+            transition: 0.5s;
+        }
+
+            .topnav button:hover {
+                background-color: black;
+                color: white;
+                cursor: pointer;
+                transition: 0.5s;
+            }
+
+    .topon {
+        margin-right: auto;
+        margin-left: auto;
+        color: #CB4427;
+        margin: 5px;
+
+
+    }
+
+    .row {
+        display: flex;
+        margin-top: 10px;
+    }
+
+    .col-6 {
+        width: 50%;
+        padding: 0 15px;
+    }
+
+    .image-container {
+        width: 100%;
+        height: auto;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .btn-primary, .btn-secondary {
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: #fff;
+    }
+
+</style>
+<div>
+    a
+</div>
+<div class="app">
+    <div class="topnav">
+        <a href="categories"><button>All Categories</button> </a>
+        <a href="category"><button>Add a Category</button> </a>
+    </div>
+    <h3 class="topon">Add Categories </h3>
+</div>
+
+<div class="row mt-10">
+    <div class="col-6">
+        <img class="image-container" src="https://cdn.pixabay.com/photo/2017/03/13/17/26/ecommerce-2140604_640.jpg" />
+    </div>
+
+    <div class="col-6">
+        @if (selectedCategory.Id == Guid.Empty)
+        {
+            <h1> Add Category</h1>
+        }
+        else
+        {
+            <h1> Update Category </h1>
+        }
+        <EditForm Model="@selectedCategory" OnValidSubmit="addCategory">
+            <DataAnnotationsValidator />
+
+            <div class="form-group">
+                <label for="categoryName">Category Name</label>
+                <InputText type="text" class="form-control" id="categoryName" @bind-Value="@selectedCategory.CategoryName" aria-describedby="name" />
+            </div>
+
+            <div class="form-group">
+                <label for="categoryImage">Category Image</label>
+                <InputText class="form-control" id="categoryImage" @bind-Value="@selectedCategory.CategoryImage" aria-describedby="name" />
+            </div>
+
+            <div class="button-container">
+                @if (selectedCategory.Id == Guid.Empty)
+                {
+                    <button type="submit" class="btn-primary">Add Category</button>
+                }
+                else
+                {
+                    <button type="submit" class="btn-primary">Update Category</button>
+                }
+                <button type="button" @onclick="@(()=> new CategoryDto())" class="btn-secondary">Reset</button>
+            </div>
+
+        </EditForm>
+    </div>
+</div>
+
+
+@code {
+
+
+    [Parameter]
+
+
+    public string Id { get; set; }
+
+    CategoryDto selectedCategory = new CategoryDto();
+
+
+    private async Task addCategory()
+    {
+        CategoryRequestDto category = new CategoryRequestDto()
+            {
+                CategoryName = selectedCategory.CategoryName,
+                CategoryImage = selectedCategory.CategoryImage,
+            };
+
+        if (selectedCategory.Id == Guid.Empty || selectedCategory.Id == null)
+        {
+            Console.WriteLine(selectedCategory.Id);
+            var res = await categoryInterface.AddCategory(category);
+            navigationManager.NavigateTo("categories");
+        }
+        else
+        {
+            //update
+            var res = await categoryInterface.UpdateCategory(selectedCategory.Id, category);
+            navigationManager.NavigateTo("categories");
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+
+        if (!string.IsNullOrWhiteSpace(Id))
+        {
+            selectedCategory = await categoryInterface.GetCategoryAsync(new Guid (Id));
+        }
+
+    }
+
+
+}
+

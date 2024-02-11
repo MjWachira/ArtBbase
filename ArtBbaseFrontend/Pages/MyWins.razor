@@ -1,5 +1,13 @@
 ﻿@page "/mywins"
 
+@inject IJSRuntime jsRuntime
+@using Newtonsoft.Json;
+@inject IArt productInterface
+@inject IBid bidService
+@inject IOrder orderservice
+@inject NavigationManager navigationManager
+@using ArtBbaseFrontend.Models.Dtos.Bid
+
 <MyBuyerLayout></MyBuyerLayout>
 <style>
     .app{
@@ -88,31 +96,83 @@
     }
  </style>
 
-<div class="app">
-    <h3 class="topon"> My Wins</h3>
 
-    <div class="bid-item">
-        <div class="bid-img">
-            <img src="/images/pics/Monalisa.png" />
-        </div>
-        <div class="bid-details">
-            <div class="bid-left">
-                <h4> Monalisa Startue </h4>
-                <p style="background-color:#FFE9E4; Padding:4px;">Bid Won</p>
+@if (isLoading)
+{
+    <p><i>Loading...</i></p>
+}
+else
+{
 
-            </div>
-            <div class="bid-center">
-                <span style="display:flex;">Your Bid: <p> Ksh 32,000</p></span>
-                <span style="display:flex;">Highest Bid: <p>Ksh 32,000</p></span>
-            </div>
-            <div class="bid-right">
-                <h4>00D:00H:00M:00S</h4>
-                <a href="myorders"><button class="btn-bid-won">Checkout</button></a> 
-            </div>
+    @if (wonbids.Count > 0)
+    {
+        <div class="app">
+        <h3 class="topon"> My Wins</h3>
+            @foreach (var bid in wonbids)
+            {
+                <div class="bid-item">
+                    <div class="bid-img">
+                        <img src="@bid.ArtImage" />
+                    </div>
+                    <div class="bid-details">
+                        <div class="bid-left">
+                            <h4> @bid.ArtName </h4>
+                            <p style="background-color:#FFE9E4; Padding:4px;">Bid Won</p>
+
+                        </div>
+                        <div class="bid-center">
+                            <span style="display:flex;">Your Bid: <p> Ksh @bid.BidAmmount</p></span>
+                            <span style="display:flex;">Highest Bid: <p>Ksh @bid.BidAmmount</p></span>
+                        </div>
+                        <div class="bid-right">
+                            <h4>00D:00H:00M:00S</h4>
+                            <a href="myorders"><button @onclick="@(() => placeOrder(bid.Id))" class="btn-bid-won">Checkout</button></a>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
-    </div>
-</div>
+         
+    }
+    else
+    {
+        <p><i>No Art Found!!</i></p>
+    }
+}
+
 
 @code {
+    private List<ArtDto> products = new List<ArtDto>();
+    private List<BidDto> wonbids = new List<BidDto>();
+    private bool isLoading = true;
+    private double bidAmount;
+    private string UserId; // Variable to store SellerId
 
+    protected override async Task OnInitializedAsync()
+    {
+        // Retrieve SellerId from local storage
+        UserId = await jsRuntime.InvokeAsync<string>("localStorage.getItem", "UserId");
+        wonbids = await bidService.GetMyWins(UserId);
+
+        isLoading = false;
+
+
+    }
+
+    private void showProduct(Guid id)
+    {
+        //navigationManager.NavigateTo($"Art/{id}");
+    }
+    private async Task placeOrder(Guid id)
+    {
+            var orderRequest = new OrderRequestDto
+                {
+                    BidderId = new Guid(UserId),
+                };
+
+
+            var response = await orderservice.PlaceOrder(id, orderRequest);
+        }
+    }
 }
+ 

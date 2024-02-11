@@ -36,6 +36,9 @@ namespace ArtService.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<double>("HighestBid")
+                        .HasColumnType("float");
+
                     b.Property<string>("Image")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -47,8 +50,8 @@ namespace ArtService.Migrations
                     b.Property<Guid>("SellerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("StartPrice")
-                        .HasColumnType("int");
+                    b.Property<double>("StartPrice")
+                        .HasColumnType("float");
 
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");

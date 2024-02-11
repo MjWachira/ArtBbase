@@ -10,6 +10,8 @@ namespace OrderService.Models
         public Guid BidderId { get; set; }
         public Guid ArtId { get; set; }
         public DateTime DatePlaced { get; set; }   = DateTime.Now;
+        public string? ArtName { get; set; }
+        public string ArtImage { get; set; } = string.Empty;
         public string CouponCode { get; set; } = string.Empty;
         public double Discount { get; set; }
         public Double TotalAmount { get; set; }

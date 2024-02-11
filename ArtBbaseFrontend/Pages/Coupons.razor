@@ -1,0 +1,112 @@
+﻿@page "/coupons"
+
+@using System.Security.Claims;
+@inject ICoupon couponInterface
+@inject NavigationManager navigationManager;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
+
+<MyAdminLayout></MyAdminLayout>
+<style>
+    .app {
+        width: 99%;
+    }
+
+    .topnav {
+        margin-top: 51px;
+        margin-right: auto;
+        margin-left: auto;
+        color: #CB4427
+    }
+
+        .topnav button {
+            background-color: white;
+            color: #CB4427;
+            border: solid 1px;
+            border-color: #CB4427;
+            height: 35px;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px;
+            transition: 0.5s;
+        }
+
+            .topnav button:hover {
+                background-color: black;
+                color: white;
+                cursor: pointer;
+                transition: 0.5s;
+            }
+
+    .topon {
+        margin-right: auto;
+        margin-left: auto;
+        color: #CB4427;
+        margin: 5px;
+    }
+</style>
+<div>
+    a
+</div>
+<div class="app">
+    <div class="topnav">
+        <a href="coupons"><button>All Coupons</button> </a>
+        <a href="coupon"><button>Add a Coupon</button> </a>
+    </div>
+    <h3 class="topon">Manage Coupons </h3>
+</div>
+
+@if (iSLoading)
+{
+    <p><i>Loading...</i></p>
+}
+else
+{
+
+    @if (coupons.Count > 0)
+    {
+        <div class="row">
+            @foreach (var coupon in coupons)
+            {
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Coupon ID: @coupon.Id</h5>
+                            <p class="card-text">Coupon Code: @coupon.CouponCode</p>
+                            <p class="card-text">Coupon Amount: @coupon.CouponAmount</p>
+                            <p class="card-text">Coupon Min Amount: @coupon.CouponMinAmount</p>
+                            <div class="btn-group" role="group" aria-label="Coupon Actions">
+                                <a href="/coupon/@coupon.CouponCode" class="btn btn-primary"><i class="bi bi-pencil-square"></i> Edit</a>
+                                <button type="button" class="btn btn-danger" @onclick="@(()=>deleteCoupon(coupon.Id))"><i class="bi bi-x-octagon"></i> Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    else
+    {
+        <p><i>No Coupons Found!!</i></p>
+    }
+}
+
+@code {
+    private bool iSLoading = true;
+    private List<CouponDto> coupons = new List<CouponDto>();
+    [CascadingParameter]
+    public Task<AuthenticationState> _authState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        coupons = await couponInterface.GetCouponsAsync();
+        iSLoading = false;
+    }
+
+    private async Task deleteCoupon(Guid id)
+    {
+        var res = await couponInterface.DeleteCoupon(id);
+        coupons = await couponInterface.GetCouponsAsync();
+    }
+}

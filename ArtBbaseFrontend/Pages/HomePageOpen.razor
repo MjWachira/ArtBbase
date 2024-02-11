@@ -1,0 +1,164 @@
+﻿@page "/homeopen"
+
+@inject IJSRuntime jsRuntime
+@using Newtonsoft.Json;
+@inject IArt productInterface
+@inject IBid bidService
+@inject NavigationManager navigationManager
+@using ArtBbaseFrontend.Models.Dtos.Bid
+
+<MyBuyerLayout></MyBuyerLayout>
+<style>
+    .topnav {
+        margin-top: 51px;
+        margin-right: auto;
+        margin-left: auto;
+        color: #CB4427
+    }
+    .topnav button{
+            background-color: white;
+            color: #CB4427;
+            border: solid 1px;
+            border-color: #CB4427;
+            height: 35px;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px;
+            transition: 0.5s;
+    }
+    .topnav button:hover{
+                background-color: black;
+                color: white;
+                cursor: pointer;
+                transition: 0.5s;
+    }
+</style>
+<div class="app">
+    <div class="topnav">
+        <a href="home"><button>All Auctions</button> </a>
+        <a href="homeopen"><button>Open Auctions</button> </a>
+        <a href="homeclosed"><button>Closed Auctions</button> </a>
+    </div>
+    <h3 class="topon">Art Gallary on Auction</h3>
+
+
+   @if (isLoading)
+    {
+        <p>Loading...</p>
+    }
+
+    @if (products.Count == 0)
+    {
+        <p><i>No Products Found !!</i></p>
+    }
+    else
+    {
+        <div class="items">
+            @foreach (var product in products)
+            {
+                <div class="bid-item">
+                    <div class="bid-img">
+                        <img src="@product.Image" />
+                    </div>
+                    <div class="bid-details">
+                        <div class="bid-left">
+                            <h4> @product.Name </h4>
+                            <span style="display:flex;">Highest Bid: <p> Ksh @product.HighestBid </p></span>
+                            <span style="display:flex;">Start Price: <p> Ksh @product.StartPrice</p></span>
+                            <a><button class="btn-view" @onclick="@(() => showProduct(product.Id))">View Item</button></a>
+                        </div>
+                        <div class="bid-right">
+                            <h4>@GetRemainingTime(product.StopTime)</h4>
+                            <p style="background-color:#FFE9E4; Padding:4px;">Bidding @product.Status</p>
+                            <input type="text" placeholder="Enter amount" @bind="@bidAmount" />
+                            <button class="btn-bid" @onclick="@(() => placeBid(product.Id))">Bid Now</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<ArtDto> products = new List<ArtDto>();
+    private bool isLoading = true;
+    private double bidAmount;
+    private string UserId; // Variable to store SellerId
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await productInterface.GetOpenArtsAsync();
+        isLoading = false;
+
+        // Retrieve SellerId from local storage
+        UserId = await jsRuntime.InvokeAsync<string>("localStorage.getItem", "UserId");
+
+        var timer = new System.Threading.Timer(async (_) =>
+    {
+    await InvokeAsync(() => StateHasChanged());
+    }, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+    }
+
+    private void showProduct(Guid id)
+    {
+        navigationManager.NavigateTo($"Art/{id}");
+    }
+
+    private async Task placeBid(Guid id)
+    {
+        var product = await productInterface.GetArtByIdAsync(id);
+        product.HighestBid = bidAmount;
+        if (product != null)
+        {
+            var bidRequest = new BidRequestDto
+                {
+                    BidderId = new Guid(UserId),
+                    BidAmmount = bidAmount,
+                    HighestBid = bidAmount
+                };
+
+            var response = await bidService.AddBid(id, bidRequest);
+            //var hbid = await bidService.GetHigestBidAsync(id)
+
+            if (response.Result != null)
+            {
+                Console.WriteLine("yes");
+                await jsRuntime.InvokeVoidAsync("ShowMessage", "success", "Bid was successful");
+            }
+            else
+            {
+                if (response.Result == null)
+                {
+                    Console.WriteLine("no");
+                    await jsRuntime.InvokeVoidAsync("ShowMessage", "error", response.Errormessage);
+                }
+                else
+                {
+                    Console.WriteLine("yesNo");
+                    //await jsRuntime.InvokeVoidAsync("ShowMessage", "error", "An error occurred while placing the bid.");
+                }
+            }
+
+            // Optionally, you can refresh the product list or update the specific product's bid information here
+        }
+        else
+        {
+            // Handle case where product is not found
+        }
+    }
+
+
+    private string GetRemainingTime(DateTime expiresAt)
+    {
+        var remainingTime = expiresAt - DateTime.UtcNow;
+        if (remainingTime.TotalSeconds < 0)
+        {
+            return "00D:00H:00M:00S";
+        }
+        else
+        {
+            return $"{remainingTime.Days}D:{remainingTime.Hours}H:{remainingTime.Minutes}M:{remainingTime.Seconds}S";
+        }
+    }
+}

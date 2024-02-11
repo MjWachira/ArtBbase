@@ -68,7 +68,7 @@ namespace OrderService.Services
                     ProductData = new SessionLineItemPriceDataProductDataOptions()
                     {
                         Name = bid.ArtName,
-                        Images = new List<string> { "https://cdn.pixabay.com/photo/2016/02/27/12/40/sculpture-1225487_1280.jpg" }
+                        Images = new List<string> {order.ArtImage}
                     }
                 },
                 Quantity = 1

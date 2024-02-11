@@ -9,7 +9,8 @@
         public string Image { get; set; } = string.Empty;
         public DateTime StartTime { get; set; } = DateTime.Now;
         public DateTime StopTime { get; set; }
-        public int StartPrice { get; set; }
+        public double StartPrice { get; set; }
+        public double HighestBid { get; set; } = 0;
         public string Category { get; set; } = string.Empty;
         public string Status { get; set; } = "Open";
 

@@ -72,5 +72,22 @@ namespace ArtService.Services
         {
             return await _context.Arts.Where(x => x.Status == "Closed").ToListAsync();
         }
+        public async Task<string> UpdateHighestBid(Guid artId, double newHighestBid)
+        {
+            var art = await _context.Arts
+                .Where(a => a.Id == artId)
+                .FirstOrDefaultAsync();
+
+            if (art != null)
+            {
+                art.HighestBid = newHighestBid;
+                await _context.SaveChangesAsync();
+                return "Highest bid updated successfully";
+            }
+            else
+            {
+                return "Art not found";
+            }
+        }
     }
 }

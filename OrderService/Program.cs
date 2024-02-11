@@ -26,6 +26,16 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.AddAuth();
 builder.AddSwaggenGenExtension();
 
+//Set cors policy
+builder.Services.AddCors(options => options.AddPolicy("orderpolicy", build =>
+{
+    //build.WithOrigins("https://localhost:7257");
+    build.AllowAnyOrigin();
+    build.AllowAnyHeader();
+    build.AllowAnyMethod();
+}));
+
+
 //
 builder.Services.AddScoped<IArt, ArtsService>();
 builder.Services.AddScoped<IBid, BidsService>();
@@ -46,11 +56,16 @@ var app = builder.Build();
 Stripe.StripeConfiguration.ApiKey = builder.Configuration.GetValue<string>("Stripe:Key");
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Configure the HTTP request pipeline.
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    if (!app.Environment.IsDevelopment())
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "AUTH API");
+        c.RoutePrefix = string.Empty;
+    }
+});
 
 app.UseHttpsRedirection();
 
@@ -59,6 +74,8 @@ app.UseMigrations();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseCors("orderpolicy");
 
 app.MapControllers();
 

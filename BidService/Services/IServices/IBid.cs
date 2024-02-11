@@ -6,6 +6,7 @@ namespace BidService.Services.IServices
     {
         Task<string> AddBid(Bid bid);
         Task<List<Bid>> GetArBids(Guid ArtId);
+        Task<Bid> GetArtHighBid(Guid ArtId);
         Task<List<Bid>> HighestBidsPerArt();
         Task <List <Bid>> HighestBidsPerItem(Guid userId);
         Task<List<Bid>> GetMyBids(Guid userId);

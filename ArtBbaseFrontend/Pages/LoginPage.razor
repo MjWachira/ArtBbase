@@ -4,6 +4,8 @@
 @inject IAuth authInterface
 @inject ILocalStorageService localStorage
 @inject AuthenticationStateProvider authProvider
+@using System.IdentityModel.Tokens.Jwt;
+@inject IJSRuntime jsRuntime
 @inject NavigationManager navigationManager
 
 <EditForm Model="@user" OnValidSubmit="loginUser">
@@ -14,13 +16,10 @@
             <div class="logform">
                 <h3>Welcome Back</h3>
                 <div>
-
                     @if (!string.IsNullOrEmpty(errorMessage))
                     {
-
                         <p class="error">@errorMessage</p>
                     }
-
                 </div>
 
                 <label for="email">Email:</label>
@@ -50,9 +49,18 @@
                                                                                       " required />
                 <ValidationMessage For="@(() => confirmPassword)" />
 
-                <button type="submit" class="loginbtn">Login</button>
-                <p>New User? <a href="/register">Register Here</a></p>
+                @if (isLoading)
+                {
+                    <div class="loading-spinner">
+                        <div class="loader"></div>
+                    </div>
+                }
+                else
+                {
+                    <button type="submit" class="loginbtn">Login</button>
+                }
 
+                <p>New User? <a href="/register">Register Here</a></p>
             </div>
         </div>
     </div>
@@ -62,12 +70,15 @@
     private LoginRequestDto user = new LoginRequestDto();
     private string confirmPassword;
     private string errorMessage;
+    private bool isLoading = false;
 
     private async Task loginUser()
     {
+        isLoading = true;
         if (user.Password != confirmPassword)
         {
             errorMessage = "Passwords do not match.";
+            isLoading = false;
             return;
         }
 
@@ -78,12 +89,35 @@
         {
             await localStorage.SetItemAsStringAsync("Token", res.Token);
             await localStorage.SetItemAsStringAsync("UserId", usr.Id);
+            await localStorage.SetItemAsStringAsync("Name", usr.Name);
+
             await authProvider.GetAuthenticationStateAsync();
-            navigationManager.NavigateTo("/home");
+
+            // Decode the JWT token to get user role
+            var token = new JwtSecurityTokenHandler().ReadJwtToken(res.Token);
+            var roleClaim = token.Claims.FirstOrDefault(c => c.Type == "role")?.Value;
+
+            //Check if user is an admin
+            if (roleClaim == "admin")
+            {
+                await jsRuntime.InvokeVoidAsync("ShowToastr", "success",  $"Welcome Admin: {usr.Name}");
+                navigationManager.NavigateTo("/admin");
+            }
+            else if (roleClaim == "seller")
+            {
+                await jsRuntime.InvokeVoidAsync("ShowToastr", "success", $"Welcome Seller: {usr.Name}");
+                navigationManager.NavigateTo("/seller");
+            }
+            else
+            {
+                await jsRuntime.InvokeVoidAsync("ShowToastr", "success", $"Welcome {usr.Name}");
+                navigationManager.NavigateTo("/home");
+            }
         }
         else
         {
             errorMessage = "Login failed. Please check your credentials.";
         }
+        isLoading = false;
     }
 }

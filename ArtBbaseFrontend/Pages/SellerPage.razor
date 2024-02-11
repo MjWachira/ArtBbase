@@ -1,96 +1,265 @@
 ﻿@page "/seller"
-@inject HttpClient Http
-@using System.Globalization;
-<LayoutSeller></LayoutSeller>
+@page "/seller/{Id}"
+
+@attribute [Authorize]
+@inject NavigationManager navigationManager;
+@inject IArt artInterface;
+@inject ICategory categoryInterface
+@inject IJSRuntime jsRuntime
+
+<MySellerLayout></MySellerLayout>
 <style>
-    .app{
-        margin-left: 14%;
-        display:flex;
-        padding-top:62px;
-        width:86%;
+
+    .app {
+        padding: 5px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+       
+        
     }
-    .addArt{
-        width:20%;
+
+    .topon {
+        margin-top: 61px;
     }
-    .addArt img{
-        width:90%;
+
+    .imgbox{
+        width:400px;
+        margin-top: 60px;
+        background: floralwhite;
+        height: 60vh;
+        margin-right:-20px;
+        border-radius:10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Box shadow added */
     }
-    .art-item{
-        display:flex;
-        flex-wrap:wrap;
-        gap:10px;
-        width:66%;
+    .imgbox h3{
+        margin:5px;
+    }
+
+    .imgbox img {
+        border-radius: 10px;
+        width: 100%;
+        height: 96%;
 
     }
+    .info{
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Box shadow added */
+        display:flex;
+        flex-direction:column;
+        justify-content: space-evenly;
+        justify-items: center;
+        align-self: center;
+        background: floralwhite;
+        margin-top: 60px;
+        width:500px;
+        min-width:400px;
+        height:80vh;
+        padding: 15px;
+    }
+
+    .app input {
+        border: none;
+        outline: none;
+        border: solid 1px;
+        border-color: #CB4427;
+        width: 90%;
+        padding: 5px;
+        border-radius: 10px;
+    }
+    .app form{
+        display:flex;
+        flex-direction:column;
+        gap:10px;
+        width:100%;
+        height:100%;
+        justify-content:space-evenly;
+        justify-items:center;
+        align-self:center;
+        
+    }
+
+    .info div {
+    display:flex;
+    flex-direction:column;
+    justify-content: space-evenly;
+    justify-items: center;
+    align-self: center;
+    width:100%;
+    }
+    form button{
+        background-color: #CB4427;
+        color: floralwhite;
+        border: none;
+        height: 35px;
+        border-radius: 5px;
+        padding: 10px;
+        margin: 10px;
+        cursor: pointer;
+        width: 150px;
+        transition: 0.5s;
+    }
+    form button:hover{
+            background-color: transparent;
+            color: #CB4427;
+            border: solid 1px;
+            border-color: #CB4427;
+            transition: 0.5s;
+    }
+
 </style>
 
-<div class="app" >
-    <div class="Add-Art">
-        <AddArt @ref="addArt" OnAddArt="AddArt"></AddArt>
+
+
+<div class="app">
+    <div class="imgbox">
+        @if (selectedArt.Id == Guid.Empty)
+        {
+            <h3> Add Art</h3>
+            <img class="" src="https://cdn.pixabay.com/photo/2017/03/13/17/26/ecommerce-2140604_640.jpg" />
+        }
+        else
+        {
+            <h3> Update Art </h3>
+            <img class="h-100 w-100" src="@selectedArt.Image" />
+        }
     </div>
+    <div class = "info">
+        <form @onsubmit="@addArt">
 
-
-       <div class="art-item">
-            @foreach (var art in arts)
+            @if (!string.IsNullOrEmpty(errorMessage))
             {
-                <SingleArt
-                    art="art"
-                    OnRemoveArt="()=> RemoveArt(art)"
-                    OnEditArt="EditArt">
-                </SingleArt>
+                <div class="alert alert-danger">@errorMessage</div>
             }
-        </div>
-    </div>
+            <div class="">
+                <label for="">Art Name</label>
+                <input type="text" class="" @bind="selectedArt.Name" />
+            </div>
 
+            <div class="">
+                <label for="">Description</label>
+                <input type="text" class="" @bind="selectedArt.Description" />
+            </div>
+
+            <div class="">
+                <label for="">Image</label>
+                <input type="text" class="" @bind="selectedArt.Image" />
+            </div>
+
+            <div class="">
+                <label for="">Stop Time</label>
+                <input type="datetime-local" class="" @bind="selectedArt.StopTime" />
+            </div>
+
+            <div class="">
+                <label for="">Start Price</label>
+                <input type="number" class="" @bind="selectedArt.StartPrice" />
+            </div>
+
+            <div class="">
+                <label for="">Category</label>
+                <select class="" style="    border: none;
+                                            outline: none;
+                                            border: solid 1px;
+                                            border-color: #CB4427;
+                                            width: 90%;
+                                            padding: 5px;
+                                            border-radius: 10px;" @bind="selectedArt.Category">
+                    <option value="">Select a category</option>
+                    @foreach (var category in categories)
+                    {
+                        <option value="@category.Id">@category.CategoryName</option>
+                    }
+                </select>
+            </div>
+
+            <div class="">
+                @if (selectedArt.Id == Guid.Empty)
+                {
+                    <button type="submit" style="width:150px" class="">Add Art</button>
+                }
+                else
+                {
+                    <button type="submit" style="width:150px" class="">Update Art</button>
+                }
+
+            </div>
+        </form>
+
+    </div>
+       
+ </div>
+        
 
 @code {
 
-    public List<Art> arts = new List<Art>();
 
-    /// <summary>
-    /// public bool IsConfirmed { get; set; }
-    /// </summary>
-    /// <returns></returns>
+    [Parameter]
+    public string Id { get; set; }
+    private string errorMessage;
+
+    ArtDto selectedArt = new ArtDto();
+
+    private List<CategoryDto> categories = new List<CategoryDto>();
+
 
     protected override async Task OnInitializedAsync()
     {
+        categories = await categoryInterface.GetCategoriesAsync();
 
-        //call api to get the products to display
-
-        var artg = await Http.GetFromJsonAsync<List<Art>>("sample-data/artpics.json");
-        if (artg.Any())
-        {
-            arts = artg;
-        }
     }
-   
 
-    public void AddArt(Art art)
+
+
+
+    private async Task addArt()
     {
-        var exitingArt = arts.Find(p => p.Id == art.Id);
-        if (exitingArt == null)
+        // Retrieve userId from localStorage
+        var userId = await jsRuntime.InvokeAsync<string>("localStorage.getItem", "UserId");
+
+        if (string.IsNullOrEmpty(userId))
         {
-            art.Id = arts.Count + 1;
-            arts.Add(art);
+            errorMessage = "User is not logged in.";
             return;
         }
-        exitingArt.Name = art.Name;
-        exitingArt.Description = art.Description;
-        
-        exitingArt.Image = art.Image;
+
+        ArtRequestDto art = new ArtRequestDto()
+            {
+                SellerId = new Guid(userId),
+                Name = selectedArt.Name,
+                Description = selectedArt.Description,
+                Image = selectedArt.Image,
+                StopTime = selectedArt.StopTime,
+                StartPrice = selectedArt.StartPrice,
+                Category = selectedArt.Category
+
+            };
+
+        if (selectedArt.Id == Guid.Empty || selectedArt.Id == null)
+        {
+            Console.WriteLine(selectedArt.Id);
+            var res = await artInterface.AddArt(art);
+            navigationManager.NavigateTo("myart");
+        }
+        else
+        {
+            //update
+            var res = await artInterface.UpdateArt(selectedArt.Id, art);
+            navigationManager.NavigateTo("myart");
+        }
     }
 
-    public void RemoveArt(Art art)
+    protected override async Task OnParametersSetAsync()
     {
-       arts.Remove(art);
+
+        if (!string.IsNullOrWhiteSpace(Id))
+        {
+            selectedArt = await artInterface.GetArtByIdAsync(new Guid(Id));
+
+        }
 
     }
-    /**/
-    public AddArt addArt;
 
-    public void EditArt(Art art)
-    {
-        addArt.EditArt(art);
 
-    }
 }
+
