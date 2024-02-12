@@ -1,64 +1,123 @@
 ﻿@page "/login"
-
+@using System.ComponentModel.DataAnnotations
 
 @inject IAuth authInterface
 @inject ILocalStorageService localStorage
 @inject AuthenticationStateProvider authProvider
+@using System.IdentityModel.Tokens.Jwt;
+@inject IJSRuntime jsRuntime
 @inject NavigationManager navigationManager
 
-
-<div class="main">
-    <div class="left">
-    </div>
-
-    <div class="right">
-
-        <div class="logform">
-            <h3>Welcome Back</h3>
-
-            <br />
-
-            <label for="email">Email:</label>
-            <input type="email" @bind="user.Username" id="email" name="email" required>
-
-            <label for="password">Password:</label>
-            <input type="password" @bind="user.Password" id="password" name="password" required>
-
-            <label for="password">Comfirm Password:</label>
-            <input type="password" id="password" name="password" required>
-            <button type="submit" @onclick="loginUser" class="loginbtn">Login</button>
-            
-
-            <p>New User?<a href="/register">Register Here</a></p>
-
+<EditForm Model="@user" OnValidSubmit="loginUser">
+    <div class="main">
+        <div class="left">
         </div>
+        <div class="right">
+            <div class="logform">
+                <h3>Welcome Back</h3>
+                <div>
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <p class="error">@errorMessage</p>
+                    }
+                </div>
 
+                <label for="email">Email:</label>
+                <InputText @bind-Value="user.Username" id="email" name="email" style="outline: #CB4427;
+                                                                                        border: none;
+                                                                                        height: 25px;
+                                                                                        border-radius: 10px;
+                                                                                        padding: 5px;
+                                                                                      " required />
+                <ValidationMessage For="@(() => user.Username)" />
+
+                <label for="password">Password:</label>
+                <InputText type="password" @bind-Value="user.Password" id="password" name="password" class="inputs" style="outline: #CB4427;
+                                                                                        border: none;
+                                                                                        height: 25px;
+                                                                                        border-radius: 10px;
+                                                                                        padding: 5px;
+                                                                                      " required />
+                <ValidationMessage For="@(() => user.Password)" />
+
+                <label for="confirmPassword">Confirm Password:</label>
+                <InputText type="password" @bind-Value="confirmPassword" id="confirmPassword" name="confirmPassword" class="inputs" style="outline: #CB4427;
+                                                                                        border: none;
+                                                                                        height: 25px;
+                                                                                        border-radius: 10px;
+                                                                                        padding: 5px;
+                                                                                      " required />
+                <ValidationMessage For="@(() => confirmPassword)" />
+
+                @if (isLoading)
+                {
+                    <div class="loading-spinner">
+                        <div class="loader"></div>
+                    </div>
+                }
+                else
+                {
+                    <button type="submit" class="loginbtn">Login</button>
+                }
+
+                <p>New User? <a href="/register">Register Here</a></p>
+            </div>
+        </div>
     </div>
-
-</div>
-
+</EditForm>
 
 @code {
-
     private LoginRequestDto user = new LoginRequestDto();
+    private string confirmPassword;
+    private string errorMessage;
+    private bool isLoading = false;
 
     private async Task loginUser()
     {
+        isLoading = true;
+        if (user.Password != confirmPassword)
+        {
+            errorMessage = "Passwords do not match.";
+            isLoading = false;
+            return;
+        }
+
         var res = await authInterface.Login(user);
         var usr = res.User;
-       
-
 
         if (!string.IsNullOrWhiteSpace(res.Token))
         {
             await localStorage.SetItemAsStringAsync("Token", res.Token);
             await localStorage.SetItemAsStringAsync("UserId", usr.Id);
+            await localStorage.SetItemAsStringAsync("Name", usr.Name);
+
             await authProvider.GetAuthenticationStateAsync();
-            navigationManager.NavigateTo("/home");
+
+            // Decode the JWT token to get user role
+            var token = new JwtSecurityTokenHandler().ReadJwtToken(res.Token);
+            var roleClaim = token.Claims.FirstOrDefault(c => c.Type == "role")?.Value;
+
+            //Check if user is an admin
+            if (roleClaim == "admin")
+            {
+                await jsRuntime.InvokeVoidAsync("ShowToastr", "success",  $"Welcome Admin: {usr.Name}");
+                navigationManager.NavigateTo("/admin");
+            }
+            else if (roleClaim == "seller")
+            {
+                await jsRuntime.InvokeVoidAsync("ShowToastr", "success", $"Welcome Seller: {usr.Name}");
+                navigationManager.NavigateTo("/seller");
+            }
+            else
+            {
+                await jsRuntime.InvokeVoidAsync("ShowToastr", "success", $"Welcome {usr.Name}");
+                navigationManager.NavigateTo("/home");
+            }
         }
-
-
+        else
+        {
+            errorMessage = "Login failed. Please check your credentials.";
+        }
+        isLoading = false;
     }
 }
-
-

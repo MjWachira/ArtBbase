@@ -9,6 +9,7 @@ namespace OrderService.Services.IServices
         Task saveChanges();
         Task<List<Orders>> GetAllOrders(Guid userId);
         Task<Orders> GetOrderById(Guid Id);
+        Task<Orders> GetOrderByBidId(Guid BidId);
         Task<StripeRequestDto> MakePayments(StripeRequestDto stripeRequestDto);
         Task<bool> ValidatePayments(Guid OrderId);
     }

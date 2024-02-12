@@ -2,6 +2,7 @@
 
 @inject IAuth authInterface;
 @inject IJSRuntime jsRuntime
+@inject NavigationManager navigationManager
 
 <div class="main">
     <div class="left">
@@ -9,29 +10,45 @@
 
     <div class="right">
 
-        <div class="logform">
-            <h3>Register</h3>
+        <EditForm Model="@newUser" OnValidSubmit="regUser">
 
-            <label for="names">Full Names:</label>
-            <input type="text" @bind=newUser.Name id="names" name="names" required>
 
-            <label for="email">Email:</label>
-            <input type="email" @bind=newUser.Email id="email" name="email" required>
+                <div class="logform">
+                    <h3>Welcome: Register Here</h3>
 
-            <label for="phone">Phone Number:</label>
-            <input type="number" @bind=newUser.PhoneNumber id="phone" name="phone" required>
+                    <!-- Validation messages for Name -->
+                    <ValidationMessage For="@(() => newUser.Name)" />
 
-            <label for="password">Password:</label>
-            <input type="password" @bind=newUser.Password id="password" name="password" required>
+                    <label for="names">Full Names:</label>
+                    <input type="text" @bind="newUser.Name" id="names" name="names" required>
 
-            <label for="password">Comfirm Password:</label>
-            <input type="password" id="password" name="password" required>
+                    <!-- Validation messages for Email -->
+                    <ValidationMessage For="@(() => newUser.Email)" />
 
-            <button type="submit" @onclick =regUser  class="loginbtn">Register</button>
+                    <label for="email">Email:</label>
+                    <input type="email" @bind="newUser.Email" id="email" name="email" required>
 
-            <p>Already a user?<a href="/Login">Login Here</a></p>
+                    <!-- Validation messages for PhoneNumber -->
+                    <ValidationMessage For="@(() => newUser.PhoneNumber)" />
 
-        </div>
+                    <label for="phone">Phone Number:</label>
+                    <input type="number" @bind="newUser.PhoneNumber" id="phone" name="phone" required>
+
+                    <!-- Validation messages for Password -->
+                    <ValidationMessage For="@(() => newUser.Password)" />
+
+                    <label for="password">Password:</label>
+                    <input type="password" @bind="newUser.Password" id="password" name="password" required>
+
+                    <!-- Confirm password input and validation messages omitted for brevity -->
+
+                    <button type="submit" class="loginbtn">Register</button>
+
+                    <p>Already a user?<a href="/Login">Login Here</a></p>
+                </div>
+          
+        </EditForm>
+
 
     </div>
 
@@ -42,8 +59,23 @@
 
     private async Task regUser()
     {
+        newUser.Image = "https://cdn.pixabay.com/photo/2016/04/01/10/11/avatar-1299805_1280.png";
         var res = await authInterface.Register(newUser);
-        await jsRuntime.InvokeVoidAsync("ShowAlert", "success", res.Result);
 
+        // Check if registration is successful
+        if (res.IsSuccess ==true && res.Result !=null)
+        {
+            // Show toastr notification with success message
+            await jsRuntime.InvokeVoidAsync("ShowToastr", "success", res.Result);
+            navigationManager.NavigateTo("/login");
+
+        }
+        else
+        {
+            
+            // Show toastr notification with error message
+            await jsRuntime.InvokeVoidAsync("ShowToastr", "error", res.Errormessage);
+        }
     }
 }
+

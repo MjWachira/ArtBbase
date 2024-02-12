@@ -1,0 +1,162 @@
+﻿@page "/art"
+@page "/art/{Id}"
+
+@attribute [Authorize]
+@inject NavigationManager navigationManager;
+@inject IArt artInterface;
+@inject ICategory categoryInterface
+
+@inject IJSRuntime jsRuntime
+
+<MyAdminLayout></MyAdminLayout>
+
+<div class="app">
+    <div class="imgbox">
+        @if (selectedArt.Id == Guid.Empty)
+        {
+            <h3> Add Art</h3>
+            <img class="" src="https://cdn.pixabay.com/photo/2017/03/13/17/26/ecommerce-2140604_640.jpg" />
+        }
+        else
+        {
+            <h3> Update Art </h3>
+            <img class="h-100 w-100" src="@selectedArt.Image" />
+        }
+    </div>
+    <div class="info">
+        <form @onsubmit="@addArt">
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger">@errorMessage</div>
+            }
+            <div class="">
+                <label for="">Art Name</label>
+                <input type="text" class="" @bind="selectedArt.Name" />
+            </div>
+
+            <div class="">
+                <label for="">Description</label>
+                <input type="text" class="" @bind="selectedArt.Description" />
+            </div>
+
+            <div class="">
+                <label for="">Image</label>
+                <input type="text" class="" @bind="selectedArt.Image" />
+            </div>
+
+            <div class="">
+                <label for="">Stop Time</label>
+                <input type="datetime-local" class="" @bind="selectedArt.StopTime" />
+            </div>
+
+            <div class="">
+                <label for="">Start Price</label>
+                <input type="number" class="" @bind="selectedArt.StartPrice" />
+            </div>
+            <div class="">
+                <label for="">Category</label>
+                <select class="" style="    border: none;
+                                            outline: none;
+                                            border: solid 1px;
+                                            border-color: #CB4427;
+                                            width: 90%;
+                                            padding: 5px;
+                                            border-radius: 10px;" @bind="selectedArt.Category">
+                    <option value="">Select a category</option>
+                    @foreach (var category in categories)
+                    {
+                        <option value="@category.Id">@category.CategoryName</option>
+                    }
+                </select>
+            </div>
+
+            <div class="">
+                @if (selectedArt.Id == Guid.Empty)
+                {
+                    <button type="submit" style="width:150px" class="">Add Art</button>
+                }
+                else
+                {
+                    <button type="submit" style="width:150px" class="">Update Art</button>
+                }
+
+            </div>
+        </form>
+
+    </div>
+
+</div>
+
+
+@code {
+
+
+    [Parameter]
+    public string Id { get; set; }
+    private string errorMessage;
+
+    ArtDto selectedArt = new ArtDto();
+    private List<CategoryDto> categories = new List<CategoryDto>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        categories = await categoryInterface.GetCategoriesAsync();
+        
+    }
+
+
+
+
+    private async Task addArt()
+    {
+        // Retrieve userId from localStorage
+        var userId = await jsRuntime.InvokeAsync<string>("localStorage.getItem", "UserId");
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            errorMessage = "User is not logged in.";
+            return;
+        }
+
+        ArtRequestDto art = new ArtRequestDto()
+            {
+                SellerId = new Guid(userId),
+                Name = selectedArt.Name,
+                Description = selectedArt.Description,
+                Image = selectedArt.Image,
+                StopTime = selectedArt.StopTime,
+                StartPrice = selectedArt.StartPrice,
+                Category = selectedArt.Category
+
+            };
+
+        if (selectedArt.Id == Guid.Empty || selectedArt.Id == null)
+        {
+            Console.WriteLine(selectedArt.Id);
+            var res = await artInterface.AddArt(art);
+            navigationManager.NavigateTo("admin");
+        }
+        else
+        {
+            //update
+            var res = await artInterface.UpdateArt(selectedArt.Id, art);
+            navigationManager.NavigateTo("admin");
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+
+        if (!string.IsNullOrWhiteSpace(Id))
+        {
+            selectedArt = await artInterface.GetArtByIdAsync(new Guid(Id));
+
+        }
+
+    }
+
+
+}
+

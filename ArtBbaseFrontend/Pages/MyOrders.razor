@@ -1,4 +1,13 @@
 ﻿@page "/myorders"
+
+@inject IOrder orderservice
+@inject IJSRuntime jsRuntime
+@using Newtonsoft.Json;
+@inject IArt productInterface
+@inject IBid bidService
+@inject IOrder orderservice
+@inject NavigationManager navigationManager
+
 <MyBuyerLayout></MyBuyerLayout>
 <style>
     .app{
@@ -88,40 +97,99 @@
 
 <div class="app">
     <h3 class="topon"> My Orders</h3>
-
-    <div class="bid-item">
-        <div class="bid-img">
-            <img src="/images/pics/Monalisa.png" />
-        </div>
-        <div class="bid-details">
-            <div class="bid-left">
-                <h4> Monalisa Startue </h4>
-                <p style="background-color:#FFE9E4; Padding:4px;">Payment: Pending</p>
-            </div>
-            <div class="bid-right">
-                 <span style="display:flex;">Amount: <p> Ksh 32,000</p></span>
-                <button class="btn-bid-won">Pay Now</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="bid-item">
-        <div class="bid-img">
-            <img src="/images/pics/Monalisa.png" />
-        </div>
-        <div class="bid-details">
-            <div class="bid-left">
-                <h4> Monalisa Startue </h4>
-                <p style="background-color:#FFE9E4; Padding:4px;">Payment: Success</p>
-            </div>
-            <div class="bid-right">
-                <span style="display:flex;">Amount: <p> Ksh 32,000</p></span>
-                <button class="btn-bid-comp">Payment Complete</button>
-            </div>
-        </div>
-    </div>
 </div>
 
+@if (isLoading)
+{
+    <p><i>Loading...</i></p>
+}
+else
+{
+    @if (myorders.Count > 0)
+    {
+        <div class="app">
+            @foreach (var order in myorders)
+            {
+                <div class="bid-item">
+                    <div class="bid-img">
+                        <img src="@order.ArtImage" />
+                    </div>
+                    <div class="bid-details">
+                        <div class="bid-left">
+                            <h4> @order.ArtName </h4>
+                            <p style="background-color:#FFE9E4; Padding:4px;">Payment: @order.Status</p>
+                        </div>
+                        <div>
+                            @if (order.Status == "Pending")
+                            {
+                                <input type="text" placeholder="Enter Coupon Code" />
+                                <button class="btn-bid-comp">Submit</button>
+                            }
+                        </div>
+                        <div class="bid-right">
+                            <span style="display:flex;">Amount: <p> Ksh @order.TotalAmount</p></span>
+                            @if (order.Status == "Pending" )
+                            {
+                                <button @onclick="@(() => completeOrder(order.Id.ToString()))" class="btn-bid-won">Pay Now</button>
+                            }
+                            else if (order.Status == "Paid")
+                            {
+                                <button class="btn-bid-comp">Verified</button>
+                            }
+                            else if (order.Status == "Ongoing" )
+                            {
+
+                                <button @onclick="@(() => completeOrder(order.Id.ToString()))" class="btn-bid-won">Pay Now</button>
+                                <br/>
+                                <button @onclick="@(() => verifyOrder(order.Id.ToString()))" class="btn-bid-comp">Verify</button>
+                            }
+           
+                          
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p><i>No Art Found!!</i></p>
+    }
+}
+
 @code {
+    private List<OrdeDto> myorders = new List<OrdeDto>();
+    private bool isLoading = true;
+    private double bidAmount;
+    private string UserId; // Variable to store SellerId
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Retrieve SellerId from local storage
+        UserId = await jsRuntime.InvokeAsync<string>("localStorage.getItem", "UserId");
+
+        myorders = await orderservice.UserOrdersAsync(UserId);
+
+        isLoading = false;
+    }
+
+    private async Task completeOrder(string orderId)
+    {
+        var stripe = new StripeRequestDto()
+            {
+                ApprovedUrl = "https://artbbasefrontend.azurewebsites.net/myorders",
+                CancelUrl = "https://artbbasefrontend.azurewebsites.net/myorders",
+                OrderId = new Guid (orderId)
+            };
+
+        var stripeRequest = await orderservice.MakePayments(stripe);
+        navigationManager.NavigateTo(stripeRequest.StripeSessionUrl, true);
+    }
+    private async Task verifyOrder(string orderId)
+    {
+        var stripeRequest = await orderservice.ValidatePayments(new Guid (orderId));   
+        await jsRuntime.InvokeVoidAsync("ShowToastr", "success", "Payment Verified");
+    }
 
 }
+

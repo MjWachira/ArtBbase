@@ -4,6 +4,7 @@ using ArtService.Services.IServices;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -16,28 +17,24 @@ namespace ArtService.Controllers
         private readonly IMapper _mapper;
         private readonly ResponseDto _response;
         private readonly IArt _artservice;
-        private readonly IUser _userservice;
+        /// <summary>
+        /// 
+        /// </summary>
+        private readonly ICategory _catservice;
 
-        public ArtController(IUser userservice, IArt art, IMapper mapper)
+        public ArtController(ICategory catservice, IArt art, IMapper mapper)
         {
-            _userservice = userservice;
+            _catservice = catservice;
             _mapper = mapper;
             _artservice = art;
             _response = new ResponseDto();
         }
 
         [HttpPost]
+       // [Authorize(Roles ="admin,seller")]
         public async Task<ActionResult<ResponseDto>> AddArt(AddArtDto newArt)
         {
-            var UserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            if (UserId == null)
-            {
-                _response.Errormessage = "Please login to add art";
-                return Unauthorized(_response);
-            }
-
             var art = _mapper.Map<Art>(newArt);
-            art.SellerId = Guid.Parse(UserId);
             var res = await _artservice.AddArt(art);
             _response.Result = res;
             return Created("", _response);
@@ -46,6 +43,20 @@ namespace ArtService.Controllers
         public async Task<ActionResult<ResponseDto>> GetAllArts()
         {
             var arts = await _artservice.GetAllArts();
+            _response.Result = arts;
+            return Ok(_response);
+        }
+        [HttpGet("OpenArt")]
+        public async Task<ActionResult<ResponseDto>> GetOpenArts()
+        {
+            var arts = await _artservice.GetOpenArts();
+            _response.Result = arts;
+            return Ok(_response);
+        }
+        [HttpGet("ClosedArts")]
+        public async Task<ActionResult<ResponseDto>> GetClosedArts()
+        {
+            var arts = await _artservice.GetClosedArts();
             _response.Result = arts;
             return Ok(_response);
         }
@@ -64,7 +75,7 @@ namespace ArtService.Controllers
             _response.Result = arts;
             return Ok(_response);
         }
-        [HttpGet("userArt{UserId}")]
+        [HttpGet("userArt/{UserId}")]
         public async Task<ActionResult<ResponseDto>> UserArts(Guid UserId)
         {
   
@@ -83,6 +94,7 @@ namespace ArtService.Controllers
         }
 
         [HttpPut("{Id}")]
+        //[Authorize(Roles = "admin,seller")]
         public async Task<ActionResult<ResponseDto>> EdiArt(AddArtDto eArt, Guid Id)
         {
             var art = await _artservice.GetOneArt(Id);
@@ -91,13 +103,15 @@ namespace ArtService.Controllers
                 _response.Errormessage = "Art Not Found";
             }
 
-            var newArt = _mapper.Map<Art>(eArt);
-            var res = await _artservice.AddArt(newArt);
+            _mapper.Map(eArt, art);
+
+            var res = await _artservice.UpdateArt();
             _response.Result = res;
             return Created("", _response);
         }
 
         [HttpDelete("{Id}")]
+        //[Authorize(Roles = "admin,seller")]
         public async Task<ActionResult<ResponseDto>> DeleteArt(Guid Id)
         {
             var art = await _artservice.GetOneArt(Id);
@@ -109,6 +123,20 @@ namespace ArtService.Controllers
             var res = await _artservice.DeleteArt(art);
             _response.Result = res;
             return Ok(_response);
+        }
+        [HttpPost("UpdateHighestBid")]
+        public async Task<IActionResult> UpdateHighestBid(Guid artId, double newHighestBid)
+        {
+            try
+            {
+                var result = await _artservice.UpdateHighestBid(artId, newHighestBid);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it accordingly
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
         }
     }
 }

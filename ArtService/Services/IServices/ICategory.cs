@@ -2,8 +2,8 @@
 
 namespace ArtService.Services.IServices
 {
-    public interface IUser
+    public interface ICategory
     {
-        Task<UserDto> GetUserById(string Id);
+        Task<CategoryDto> GetCatById(string Id);
     }
 }

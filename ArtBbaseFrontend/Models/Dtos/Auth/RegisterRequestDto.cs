@@ -4,17 +4,22 @@ namespace ArtBbaseFrontend.Models.Dtos.Auth
 {
     public class RegisterRequestDto
     {
-        [Required]
-        public string Name { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Full name is required")]
+        public string Name { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email format")]
+        public string Email { get; set; }
 
-        public string Email { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Phone number is required")]
+        [Phone(ErrorMessage = "Invalid phone number format")]
+        public string PhoneNumber { get; set; }
 
-        [Required]
-        public string Password { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Password is required")]
+        public string Password { get; set; }
 
-        [Required]
-        public string PhoneNumber { get; set; } = string.Empty;
+        public string? Image { get; set; } 
+        public string? Role { get; set; }
+
     }
 }

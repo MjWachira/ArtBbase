@@ -87,6 +87,7 @@
     }
     .h1r {
         display: unset;
+        marhin-top:66px;
         margin-right: auto;
         margin-left: auto;
         margin-bottom:10px;
@@ -159,7 +160,7 @@
 }
 
     .text1::after, .text2::after {
-        content: "|";
+        content: " ";
         position: absolute;
         right: 0;
         animation: caret infinite;

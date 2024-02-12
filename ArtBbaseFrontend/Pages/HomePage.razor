@@ -1,285 +1,212 @@
 ﻿@page "/home"
 
+@inject IJSRuntime jsRuntime
+@using Newtonsoft.Json;
+@inject IArt productInterface
+@inject IBid bidService
+@inject NavigationManager navigationManager
+@using ArtBbaseFrontend.Models.Dtos.Bid
+
 <MyBuyerLayout></MyBuyerLayout>
 <style>
-    .app{
-        padding: 5px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 15px;
-       
-    }
-
-    .topon{
+    .topnav {
         margin-top: 51px;
         margin-right: auto;
         margin-left: auto;
         color: #CB4427
-
     }
-    .top-bid{
-        display: flex;
-        flex-direction: column;
-        width:95%;
-        background-color: white;
-        padding:20px;
-        border-radius:10px;
-        margin-right:auto;
-        margin-left:auto;
-        height:30%;
-        
-        
+    .topnav button{
+            background-color: white;
+            color: #CB4427;
+            border: solid 1px;
+            border-color: #CB4427;
+            height: 35px;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px;
+            transition: 0.5s;
     }
-    .top-bid img{
-        width:100%;
-        height:50%;
-
-    }
-
-    .top-details{
-        display:flex;
-        justify-content:space-between;
-        padding-right:10px;
-        padding-left: 10px;
-        margin-top:-50px;
-        
-    }
-
-    .top-left{
-        width:45%;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        background-color: rgba(255, 255, 255, 0.7);
-        padding:2%;
-        border-radius:10px;
-        justify-content: space-between;
-    }
-
-    .top-right{
-        width: 45%;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        background-color: rgba(255, 255, 255, 0.7);
-        padding: 2%;
-        border-radius: 10px;
-        align-items: start;
-        justify-content: space-between;
-    }
-    .btn-view{
-        background-color:black;
-        color:white;
-        width:90%;
-        padding:5px;
-        height:25px;
-        border-radius:5px;
-    }
-
-    .app input {
-        border:none;
-        outline:none;
-        border: solid 1px;
-        border-color: #CB4427;
-        width: 90%;
-        padding:5px;
-        border-radius:10px;
-        
-    }
-
-    .btn-bid{
-        background-color: #CB4427;
-        border: none;
-        width: 90%;
-        padding: 5px;
-        height: 25px;
-        border-radius: 5px;
-        color: white;
-
-    }
-
-    .app p{
-        color: #CB4427;
-        font-weight:bold;
-    }
-
-    .bid-item {
-        display: flex;
-        flex-direction: column;
-        width: 350px;
-        background-color: white;
-        padding: 2px;
-        border-radius: 10px;
-        margin-right: auto;
-        margin-left: auto;
-        height: 30%;
-        margin:10px;
-    }
-
-        .bid-img img {
-            width: 100%;
-            height: 350px;
-            border-radius:10px;
-        }
-
-    .bid-details {
-        display: flex;
-        justify-content: space-between;
-        padding-right: 10px;
-        padding-left: 10px;
-        margin-top: -50px;
-        background-color: rgba(255, 255, 255, 0.7);
-        border-radius:10px;
-    }
-
-    .bid-left {
-        width: 50%;
-       
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        padding: 2px;
-        border-radius: 10px;
-        justify-content:space-between;
-    }
-
-    .bid-right {
-        width: 50%;
-        display: flex;
-       
-        flex-direction: column;
-        gap: 10px;
-        padding: 2px;
-        padding: 2%;
-        border-radius: 10px;
-        align-items: start;
-        justify-content:space-between;
-    }
-
-    .items{
-        display:flex;
-        flex-wrap:wrap;
-        align-items:center;
-        justify-content:center;
-    }
-    .search{
-        width:95%;
-        background-color:white;
-        justify-content:space-evenly;
-        height:50px;
-        margin-right:auto;
-        margin-left:auto;
-        padding:15px;
-        margin-top:10px;
-        display:flex;
-
+    .topnav button:hover{
+                background-color: black;
+                color: white;
+                cursor: pointer;
+                transition: 0.5s;
     }
 </style>
-
 <div class="app">
+    <div class="topnav">
+        <a href="home"><button>All Auctions</button> </a>
+        <a href="homeopen"><button>Open Auctions</button> </a>
+        <a href="homeclosed"><button>Closed Auctions</button> </a>
+    </div>
     <h3 class="topon">Top On Auction</h3>
+
+    @if (products != null && products.Count > 0)
+{
     <div class="top-bid">
-       
         <div class="topb-img">
-            <img src="/images/pics/3in1.png" />
+            <img src="@products[0].Image" />
         </div>
         <div class="top-details">
-
             <div class="top-left">
-                <h4> Three In One Art </h4>
-                <span style="display:flex;">Higest Bid: <p> Ksh 31,000</p></span>
-                <span style="display:flex;">Start Price: <p>Ksh 30,000</p></span>
-                <a href="buyerviewitem"><button class="btn-view">View Item</button></a>
+                <h4> @products[0].Name </h4>
+                <span style="display:flex;">Highest Bid: <p> Ksh @products[0].HighestBid</p></span>
+                <span style="display:flex;">Start Price: <p>Ksh @products[0].StartPrice</p></span>
+                <a href="home"><button class="btn-view">View Item</button></a>
             </div>
             <div class="top-right">
-                <h4>01D:05H:10M:30S</h4>
-                <p style="background-color:#FFE9E4; Padding:4px;">Biding Open</p>
-                <input type="text" placeholder="Enter amount" />
-                <button class="btn-bid">Bid Now</button>
+                <h4>@GetRemainingTime(products[0].StopTime)</h4>
+                <p style="background-color:#FFE9E4; Padding:4px;">@products[0].Status</p>
+                <input type="text" placeholder="Enter amount" @bind="@bidAmount" />
+                <button @onclick="@(() => placeBid(products[0].Id))" class="btn-bid">Bid Now</button>
             </div>
         </div>
     </div>
+    }
 
-    
 
-    <div class="search"> 
+    <div class="search">
         <div style="width:60%">
-            <h3>Gallary on Auction</h3> 
+            <h3>Gallary on Auction</h3>
         </div>
         <div>
             <span>Search - Filter</span>
         </div>
         <div>
             <input type="text" />
-         </div>
-    </div>
-
-    <div class="items">
-        <div class="bid-item">
-            <div class="bid-img">
-                <img src="/images/pics/Monalisa.png" />
-            </div>
-            <div class="bid-details">
-                <div class="bid-left">
-                    <h4> Three In One Art </h4>
-                    <span style="display:flex;">Higest Bid: <p> Ksh 31,000</p></span>
-                    <span style="display:flex;">Start Price: <p>Ksh 30,000</p></span>
-                    <a><button class="btn-view">View Item</button></a>
-                </div>
-                <div class="bid-right">
-                    <h4>01D:05H:10M:30S</h4>
-                    <p style="background-color:#FFE9E4; Padding:4px;">Biding Open</p>
-                    <input type="text" placeholder="Enter amount" />
-                    <button class="btn-bid">Bid Now</button>
-                </div>
-            </div>
-        </div>
-        <div class="bid-item">
-            <div class="bid-img">
-                <img src="/images/pics/Monalisa.png" />
-            </div>
-            <div class="bid-details">
-                <div class="bid-left">
-                    <h4> Three In One Art </h4>
-                    <span style="display:flex;">Higest Bid: <p> Ksh 31,000</p></span>
-                    <span style="display:flex;">Start Price: <p>Ksh 30,000</p></span>
-                    <a><button class="btn-view">View Item</button></a>
-                </div>
-                <div class="bid-right">
-                    <h4>01D:05H:10M:30S</h4>
-                    <p style="background-color:#FFE9E4; Padding:4px;">Biding Open</p>
-                    <input type="text" placeholder="Enter amount" />
-                    <button class="btn-bid">Bid Now</button>
-                </div>
-            </div>
-        </div>
-        <div class="bid-item">
-            <div class="bid-img">
-                <img src="/images/pics/Monalisa.png" />
-            </div>
-            <div class="bid-details">
-                <div class="bid-left">
-                    <h4> Three In One Art </h4>
-                    <span style="display:flex;">Higest Bid: <p> Ksh 31,000</p></span>
-                    <span style="display:flex;">Start Price: <p>Ksh 30,000</p></span>
-                    <a><button class="btn-view">View Item</button></a>
-                </div>
-                <div class="bid-right">
-                    <h4>01D:05H:10M:30S</h4>
-                    <p style="background-color:#FFE9E4; Padding:4px;">Biding Open</p>
-                    <input type="text" placeholder="Enter amount" />
-                    <button class="btn-bid">Bid Now</button>
-                </div>
-            </div>
         </div>
     </div>
-    
 
-    
+    @if (isLoading)
+    {
+        <p>Loading...</p>
+    }
+
+    @if (products.Count == 0)
+    {
+        <p><i>No Products Found !!</i></p>
+    }
+    else
+    {
+        <div class="items">
+            @foreach (var product in products)
+            {
+                <div class="bid-item">
+                    <div class="bid-img">
+                        <img src="@product.Image" />
+                    </div>
+                    <div class="bid-details">
+                        <div class="bid-left">
+                            <h4> @product.Name </h4>
+                            <span style="display:flex;">Highest Bid: <p> Ksh @product.HighestBid </p></span>
+                            <span style="display:flex;">Start Price: <p> Ksh @product.StartPrice</p></span>
+                            <a><button class="btn-view" @onclick="@(() => showProduct(product.Id))">View Item</button></a>
+                        </div>
+                        <div class="bid-right">
+                            <h4>@GetRemainingTime(product.StopTime)</h4>
+                            <p style="background-color:#FFE9E4; Padding:4px;">Bidding @product.Status</p>
+                            <input type="text" placeholder="Enter amount" @bind="@bidAmount" />
+                            <button class="btn-bid" @onclick="@(() => placeBid(product.Id))">Bid Now</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
 </div>
 
-
 @code {
+    private List<ArtDto> products = new List<ArtDto>();
+    private bool isLoading = true;
+    private double bidAmount;
+    private string UserId; // Variable to store SellerId
 
+    protected override async Task OnInitializedAsync()
+    {
+        products = await productInterface.GetArtsAsync();
+        isLoading = false;
+
+        // Retrieve SellerId from local storage
+        UserId = await jsRuntime.InvokeAsync<string>("localStorage.getItem", "UserId");
+
+        var timer = new System.Threading.Timer(async (_) =>
+    {
+    await InvokeAsync(() => StateHasChanged());
+    }, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+
+    }
+
+    private void showProduct(Guid id)
+    {
+       // navigationManager.NavigateTo($"Art/{id}");
+    }
+
+    private async Task placeBid(Guid id)
+    {
+        var product = await productInterface.GetArtByIdAsync(id);
+        product.HighestBid = bidAmount;
+        if (product != null)
+        {
+            var bidRequest = new BidRequestDto
+                {
+                    BidderId = new Guid(UserId),
+                    BidAmmount = bidAmount,
+                    HighestBid = bidAmount
+                };
+
+           
+            var response = await bidService.AddBid(id, bidRequest);
+            //var hbid = await bidService.GetHigestBidAsync(id)
+           
+                
+
+            if (response.Result != null)
+            {
+                Console.WriteLine("yes");
+                await jsRuntime.InvokeVoidAsync("ShowMessage", "success", "Bid was successful");
+                product.HighestBid = bidAmount;
+                var updateResult = await productInterface.UpdateHighestBid(id, bidAmount);
+
+                if (!updateResult.IsSuccess)
+                {
+                    // Handle the case where updating the highest bid on the art fails
+                    Console.WriteLine("Error updating highest bid on the art: " + updateResult.Errormessage);
+                    return;
+                }
+            }
+            else
+            {
+                if (response.Result == null)
+                {
+                    Console.WriteLine("no");
+                    await jsRuntime.InvokeVoidAsync("ShowMessage", "error", response.Errormessage);
+                }
+                else
+                {
+                    Console.WriteLine("yesNo");
+                    //await jsRuntime.InvokeVoidAsync("ShowMessage", "error", "An error occurred while placing the bid.");
+                }
+            }
+
+            // Optionally, you can refresh the product list or update the specific product's bid information here
+        }
+        else
+        {
+            // Handle case where product is not found
+        }
+    }
+
+
+    private string GetRemainingTime(DateTime expiresAt)
+    {
+        var remainingTime = expiresAt - DateTime.UtcNow;
+        if (remainingTime.TotalSeconds < 0)
+        {
+            return "00D:00H:00M:00S";
+        }
+        else
+        {
+            return $"{remainingTime.Days}D:{remainingTime.Hours}H:{remainingTime.Minutes}M:{remainingTime.Seconds}S";
+        }
+    }
 }

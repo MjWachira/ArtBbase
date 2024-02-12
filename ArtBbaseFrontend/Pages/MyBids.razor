@@ -1,4 +1,14 @@
 ﻿@page "/mybids"
+
+@inject IJSRuntime jsRuntime
+@using Newtonsoft.Json;
+@inject IArt productInterface
+@inject IBid bidService
+@inject NavigationManager navigationManager
+@using ArtBbaseFrontend.Models.Dtos.Bid
+
+
+
 <MyBuyerLayout></MyBuyerLayout>
 <style>
     .app{
@@ -89,71 +99,103 @@
 
 <div class="app">
     <h3 class="topon"> My Bids</h3>
-
-    <div class="bid-item">
-        <div class="bid-img">
-            <img src="/images/pics/Monalisa.png" />
-        </div>
-        <div class="bid-details">
-            <div class="bid-left">
-                <h4> Monalisa Startue </h4>
-                <p style="background-color:#FFE9E4; Padding:4px;">Biding Open</p>
-               
-            </div>
-            <div class="bid-center">
-                <span style="display:flex;">Your Bid: <p> Ksh 31,000</p></span>
-                <span style="display:flex;">Highest Bid: <p>Ksh 32,000</p></span>
-            </div>
-            <div class="bid-right">
-                <h4>01D:05H:10M:30S</h4>  
-                <a href="buyerviewitem"><button class="btn-bid">Bid Again</button></a>
-            </div>
-        </div>
-    </div>
-
-    <div class="bid-item">
-        <div class="bid-img">
-            <img src="/images/pics/Monalisa.png" />
-        </div>
-        <div class="bid-details">
-            <div class="bid-left">
-                <h4> Monalisa Startue </h4>
-                <p style="background-color:#FFE9E4; Padding:4px;">Biding Closed</p>
-
-            </div>
-            <div class="bid-center">
-                <span style="display:flex;">Your Bid: <p> Ksh 31,000</p></span>
-                <span style="display:flex;">Highest Bid: <p>Ksh 32,000</p></span>
-            </div>
-            <div class="bid-right">
-                <h4>00D:00H:00M:00S</h4>
-                <button class="btn-bid-lost">Bid Lost</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="bid-item">
-        <div class="bid-img">
-            <img src="/images/pics/Monalisa.png" />
-        </div>
-        <div class="bid-details">
-            <div class="bid-left">
-                <h4> Monalisa Startue </h4>
-                <p style="background-color:#FFE9E4; Padding:4px;">Bid Won</p>
-
-            </div>
-            <div class="bid-center">
-                <span style="display:flex;">Your Bid: <p> Ksh 32,000</p></span>
-                <span style="display:flex;">Highest Bid: <p>Ksh 32,000</p></span>
-            </div>
-            <div class="bid-right">
-                <h4>00D:00H:00M:00S</h4>
-                <a href="myorders"><button class="btn-bid-won">Checkout</button></a>
-            </div>
-        </div>
-    </div>
 </div>
 
-@code {
-
+@if (isLoading)
+{
+    <p><i>Loading...</i></p>
 }
+else
+{
+
+    @if (hbids.Count > 0)
+    {
+        <div class="app">
+            @foreach (var bid in hbids)
+            {
+                <div class="bid-item">
+        <div class="bid-img">
+            <img src="@bid.ArtImage" />
+        </div>
+        <div class="bid-details">
+            <div class="bid-left">
+                <h4> @bid.ArtName </h4>
+                <p style="background-color:#FFE9E4; Padding:4px;">Biding @bid.Status</p>
+
+            </div>
+            <div class="bid-center">
+                <span style="display:flex;">Your Bid: <p> Ksh @bid.BidAmmount</p></span>
+                <span style="display:flex;">Highest Bid: <p>Ksh @bid.HighestBid</p></span>
+            </div>
+            <div class="bid-right">
+                            <h4>@GetRemainingTime(bid.StopTime)</h4>
+                @if(@bid.Status == "Open"){
+                                <a href="homeopen"><button class="btn-bid">Bid Again</button></a>
+                }
+                            else if (@bid.Status == "Closed"){
+                            if(@bid.BidAmmount == @bid.HighestBid ){
+
+                            <a href="myorders"><button class="btn-bid-won">Checkout</button></a>
+                            }else{
+                            <button class="btn-bid-lost">Bid Lost</button>
+                            }
+                 }
+               
+            </div>
+        </div>
+    </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p><i>No Art Found!!</i></p>
+    }
+}
+
+
+
+@code {
+    private List<ArtDto> products = new List<ArtDto>();
+    private List<BidDto> hbids = new List<BidDto>();
+    private bool isLoading = true;
+    private double bidAmount;
+    private string UserId; // Variable to store SellerId
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Retrieve SellerId from local storage
+        UserId = await jsRuntime.InvokeAsync<string>("localStorage.getItem", "UserId");
+        hbids = await bidService.GetMyHighestBidsAsync(UserId);
+
+        isLoading = false;
+
+        var timer = new System.Threading.Timer(async (_) =>
+    {
+    await InvokeAsync(() => StateHasChanged());
+    }, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+
+       
+    }
+
+    private void showProduct(Guid id)
+    {
+        //navigationManager.NavigateTo($"Art/{id}");
+    }
+    private string GetRemainingTime(DateTime expiresAt)
+    {
+        var remainingTime = expiresAt - DateTime.UtcNow;
+        if (remainingTime.TotalSeconds < 0)
+        {
+            return "00D:00H:00M:00S";
+        }
+        else
+        {
+            return $"{remainingTime.Days}D:{remainingTime.Hours}H:{remainingTime.Minutes}M:{remainingTime.Seconds}S";
+        }
+    }
+  
+}
+
+
+

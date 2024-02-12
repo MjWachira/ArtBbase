@@ -33,20 +33,34 @@ namespace ArtService
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             //base url
-            builder.Services.AddHttpClient("User", c => c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ServiceURl:AuthService")));
+            builder.Services.AddHttpClient("Category", c => c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ServiceURl:CategoryService")));
        
             //REG FOR DI
             builder.Services.AddScoped<IArt,ArtsService>();
-            builder.Services.AddScoped<IUser, UsersService>();
+            builder.Services.AddScoped<ICategory, CatService>();
+            //Set cors policy
+            builder.Services.AddCors(options => options.AddPolicy("artpolicy", build =>
+            {
+                //build.WithOrigins("https://localhost:7257");
+                build.AllowAnyOrigin();
+                build.AllowAnyHeader();
+                build.AllowAnyMethod();
+            }));
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+                if (!app.Environment.IsDevelopment())
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "AUTH API");
+                    c.RoutePrefix = string.Empty;
+                }
+            });
+
+
             app.UseMigrations();
 
             app.UseHttpsRedirection();
@@ -55,6 +69,7 @@ namespace ArtService
 
             app.UseAuthorization();
 
+            app.UseCors("artpolicy");
 
             app.MapControllers();
 

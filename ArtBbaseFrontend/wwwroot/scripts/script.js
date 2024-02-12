@@ -1,7 +1,6 @@
 window.ShowMessage = (type, message) => {
     if (type === 'success') {
-         toggleSidebar()
-
+     
         Swal.fire({
             title: "Added Successfully!",
             text: message,
@@ -10,22 +9,23 @@ window.ShowMessage = (type, message) => {
     }
     if (type === 'error') {
         Swal.fire({
-            title: "Deleted!",
+            title: "Error!",
             text: message,
-            icon: "success"
+            icon: "error"
         });
     }
-    if (type === 'edit') {
-        toastr.success(message)
+    if (type === 'edit' || type === 'login') {
+        toastr.success(message);
     }
+};
 
-    if (type === 'login') {
-        toastr.success(message)
-    }
+// Define your alert implementation here
+window.ShowAlert = function (type, message) {
+    alert(message); // Example: Use the browser's native alert function
+};
 
-
-
-}
+// Function to toggle navigation
+/*
 function toggleNav() {
     var x = document.getElementById("myTopnav");
     var icon = document.querySelector('.topnav a.icon');
@@ -38,4 +38,12 @@ function toggleNav() {
         icon.innerHTML = '<div class="hamburger">&#9776;</div>';
     }
 }
-
+*/
+// Function to show toastr notifications
+window.ShowToastr = function (type, message) {
+    if (type === 'success') {
+        toastr.success(message);
+    } else if (type === 'error') {
+        toastr.error(message);
+    }
+};

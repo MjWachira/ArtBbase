@@ -1,8 +1,109 @@
-﻿@page "/test"
+﻿@page "/testa"
 
-<Mylayout></Mylayout>
-<h3>Test</h3>
+@inject IJSRuntime jsRuntime
+@using Newtonsoft.Json;
+@inject IArt productInterface
+@inject NavigationManager navigationManager
+<PageTitle>Index</PageTitle>
+
+@if (isLoading)
+{
+
+    //insert a spinner
+    <p>Loading...</p>
+}
+else
+{
+    @if (authenticated && role == "admin")
+    {
+        <div class="row mb-4">
+            <div class="col-6">
+                Product  List
+            </div>
+            <div class="col-6 text-end">
+                <a href="product/add" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> &nbsp; Add Product
+                </a>
+            </div>
+        </div>
+    }
+    //show products
+    @if (@products.Count == 0)
+    {
+        <p><i>No Products Found !!</i></p>
+    }
+    else
+    {
+        //we have products
+        <div class="row">
+            @foreach (var product in products)
+            {
+                <div class="col-3 card shadow  m-2" @onclick="(()=>showProduct(product.Id))">
+                    <img src="@product.Image" class="card-img-top" alt="@product.Name">
+                    <div class="card-body">
+                        <h5 class="card-title">@product.Name</h5>
+                        <h6 class="card-subtitle mb-3 text-muted">@product.Description</h6>
+                        <div>
+
+                            <span>@product.Category </span>
+                            <span>@product.StartPrice.ToString("c0") </span>
+                            <br />
+                        
+                            
+                                <a href="product/update/@product.Id" class="p-4">update</a>
+
+                                <button @onclick="@(()=>deleteProduct(product.Id))" class="btn btn-danger">Delete</button>
+                            
+                            
+                        </div>
+
+                    </div>
+                </div>
+            }
+
+
+        </div>
+    }
+}
+
+
+
+
+
 
 @code {
+    private List<ArtDto> products = new List<ArtDto>();
+    private bool isLoading = true;
+    private string role { get; set; }
+    private bool authenticated { get; set; }
+    [CascadingParameter]
+    public Task<AuthenticationState> _authState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        //set the list
+
+        products = await productInterface.GetArtsAsync();
+        isLoading = false;
+        Console.WriteLine(products.Count);
+       // var authState = await _authState;
+       // role = authState.User.FindFirst("role")?.Value;
+      //  authenticated = authState.User.Identity.IsAuthenticated;
+      //  Console.WriteLine(authenticated);
+    }
+
+
+    private void showProduct(Guid id)
+    {
+        navigationManager.NavigateTo($"Art/{id}");
+    }
+
+    private async Task deleteProduct(Guid id)
+    {
+       await productInterface.DeleteArt(id);
+    }
+
+
 
 }

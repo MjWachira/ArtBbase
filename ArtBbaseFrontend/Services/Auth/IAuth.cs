@@ -8,5 +8,8 @@ namespace ArtBbaseFrontend.Services.Auth
         Task<ResponseDto> Register(RegisterRequestDto registerRequestDto);
 
         Task<LoginResponseDto> Login(LoginRequestDto loginRequestDto);
+
+        Task<List<UserDto>> GetAllUsers();
+        Task<UserDto> GetOneUser(Guid Id);
     }
 }

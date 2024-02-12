@@ -28,13 +28,29 @@ namespace ArtService.Services
 
         public async Task<List<Art>> GetAllArts()
         {
-            return await _context.Arts.ToListAsync();  
+            var arts = await _context.Arts.ToListAsync();
+            foreach (var art in arts)
+            {
+                if (art.StopTime < DateTime.Now && art.Status == "Open")
+                {
+                    art.Status = "Closed";
+                }
+            }
+            await _context.SaveChangesAsync();
+            return arts;
         }
 
         public async Task<Art> GetOneArt(Guid Id)
         {
-            return await _context.Arts.Where(x => x.Id == Id).FirstOrDefaultAsync();
+            var art = await _context.Arts.Where(x => x.Id == Id).FirstOrDefaultAsync();
+            if (art != null && art.StopTime < DateTime.Now && art.Status == "Open")
+            {
+                art.Status = "Closed";
+                await _context.SaveChangesAsync(); 
+            }
+            return art;
         }
+
 
         public async Task<List<Art>> GetMyArts(Guid userId)
         {
@@ -45,6 +61,33 @@ namespace ArtService.Services
         {
             await _context.SaveChangesAsync();
             return "Art updated successfully";
+        }
+
+        public async Task<List<Art>> GetOpenArts()
+        {
+            return await _context.Arts.Where(x=>x.Status =="Open").ToListAsync();
+        }
+
+        public async Task<List<Art>> GetClosedArts()
+        {
+            return await _context.Arts.Where(x => x.Status == "Closed").ToListAsync();
+        }
+        public async Task<string> UpdateHighestBid(Guid artId, double newHighestBid)
+        {
+            var art = await _context.Arts
+                .Where(a => a.Id == artId)
+                .FirstOrDefaultAsync();
+
+            if (art != null)
+            {
+                art.HighestBid = newHighestBid;
+                await _context.SaveChangesAsync();
+                return "Highest bid updated successfully";
+            }
+            else
+            {
+                return "Art not found";
+            }
         }
     }
 }

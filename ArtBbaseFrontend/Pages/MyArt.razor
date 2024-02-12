@@ -1,72 +1,111 @@
 ﻿@page "/myart"
 
+@using System.Security.Claims;
+@inject IJSRuntime jsRuntime
+@inject IArt artInterface
+@inject NavigationManager navigationManager;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
 
-@inject HttpClient Http
-@using System.Globalization;
-<LayoutSeller></LayoutSeller>
-<style>
-    .app{
-        margin-left: 14%;
-        display:flex;
-        padding-top:62px;
-        width:86%;
-    }
-    .addArt{
-        width:20%;
-    }
-    .art-item{
-        display:flex;
-        flex-wrap:wrap;
-        gap:10px;
-        width:66%;
+<MySellerLayout></MySellerLayout>
 
-    }
-</style>
 
-<div class="app" >
-
-       <div class="art-item">
-            @foreach (var art in arts)
-            {
-                <SingleArt>
-                    art="art"
-                    OnRemoveArt="()=> RemoveArt(art)"
-                   
-                </SingleArt>
-            }
+<div class="app">
+    <div class="search">
+        <div style="width:60%">
+            <h3>Gallary on Auction</h3>
+        </div>
+        <div>
+            <span>Search - Filter</span>
+        </div>
+        <div>
+            <input type="text" />
         </div>
     </div>
 
+    <div class="items">
+    </div>
+
+    @if (iSLoading)
+    {
+        <p><i>Loading...</i></p>
+    }
+    else
+    {
+
+        @if (arts.Count > 0)
+        {
+            <div class="items">
+                @foreach (var art in arts)
+                {
+                    <div class="bid-item">
+                        <div class="bid-img">
+                            <img src="@art.Image" />
+                        </div>
+                        <div class="bid-details">
+                            <div class="bid-left">
+                                <h4> @art.Name </h4>
+                                <span style="display:flex;">Higest Bid: <p>Ksh @art.HighestBid </p></span>
+                                <span style="display:flex;">Start Price: <p>Ksh @art.StartPrice</p></span>
+                                <a href="/seller/@art.Id"><button class="btn-view">Edit</button></a>
+                            </div>
+                            <div class="bid-right">
+                                <h4>@GetRemainingTime(art.StopTime)</h4>
+                                <p style="Padding:4px;">Biding @art.Status</p>
+                                <button class="btn-close">Close Bid</button>
+                                <button class="btn-bid" @onclick="@(()=>deleteArt(art.Id))">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p><i>No Art Found!!</i></p>
+        }
+    }
+
+</div>
 
 @code {
-
-    public List<Art> arts = new List<Art>();
-
-    /// <summary>
-    /// public bool IsConfirmed { get; set; }
-    /// </summary>
-    /// <returns></returns>
+    private bool iSLoading = true;
+    private List<ArtDto> arts = new List<ArtDto>();
+    private Dictionary<Guid, BidDto> highestBids = new Dictionary<Guid, BidDto>();
+    [CascadingParameter]
+    public Task<AuthenticationState> _authState { get; set; }
+    private string UserId;
 
     protected override async Task OnInitializedAsync()
     {
+        UserId = await jsRuntime.InvokeAsync<string>("localStorage.getItem", "UserId");
+        arts = await artInterface.GetUserArtsAsync(new Guid(UserId));
+        iSLoading = false;
 
-        //call api to get the products to display
-
-        var artg = await Http.GetFromJsonAsync<List<Art>>("sample-data/artpics.json");
-        if (artg.Any())
+        // Start the timer to update the UI every second
+        var timer = new System.Threading.Timer(async (_) =>
         {
-            arts = artg;
+            await InvokeAsync(() => StateHasChanged());
+        }, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+    }
+
+
+    private async Task deleteArt(Guid id)
+    {
+        var res = await artInterface.DeleteArt(id);
+        arts = await artInterface.GetArtsAsync();
+    }
+    private string GetRemainingTime(DateTime expiresAt)
+    {
+        var remainingTime = expiresAt - DateTime.Now;
+        if (remainingTime.TotalSeconds < 0)
+        {
+            return "00d 00h 00m 00s";
+        }
+        else
+        {
+            return $"{remainingTime.Days}d {remainingTime.Hours}h {remainingTime.Minutes}m {remainingTime.Seconds}s";
         }
     }
-   
-
-
-
-    public void RemoveArt(Art art)
-    {
-       arts.Remove(art);
-
-    }
-   
 
 }

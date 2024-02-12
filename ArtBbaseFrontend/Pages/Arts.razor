@@ -1,0 +1,103 @@
+﻿@page "/arts"
+@using System.Security.Claims;
+@inject IArt artInterface
+@inject IBid bidInterface
+@inject NavigationManager navigationManager;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
+
+@if (isLoading)
+{
+    <p><i>Loading...</i></p>
+}
+else
+{
+    <div class="row mb-4">
+        <div class="col-6">
+            Category List
+        </div>
+        <div class="col-6 text-end">
+            <a href="art" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> &nbsp; Add Art
+            </a>
+        </div>
+    </div>
+
+    @if (arts.Count > 0)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Image</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Time Remaining</th>
+                    <th scope="col">Highest Bid</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var art in arts)
+                {
+                    <tr>
+                        <th scope="row">@art.Id</th>
+                        <td><img src="@art.Image" style="max-width: 100px;" /></td>
+                        <td>@art.Name</td>
+                        <td>@GetRemainingTime(art.StopTime, art)</td>
+                        <td>@(highestBids.ContainsKey(art.Id) ? highestBids[art.Id].BidAmmount.ToString() : "0")</td>
+
+                        <td>
+                            <a class="btn btn-primary" href="/art/@art.Id"><i class="bi bi-pencil-square"></i> Edit</a>
+                            <button class="btn btn-danger" @onclick="@(() => deleteArt(art.Id))"><i class="bi bi-x-octagon"></i> Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p><i>No Art Found!!</i></p>
+    }
+}
+
+@code {
+    private bool isLoading = true;
+    private List<ArtDto> arts = new List<ArtDto>();
+    private Dictionary<Guid, BidDto> highestBids = new Dictionary<Guid, BidDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        arts = await artInterface.GetArtsAsync();
+
+        foreach (var art in arts)
+        {
+           //var highestBid = await bidInterface.GetHigestBidAsync(art.Id);
+            //highestBids[art.Id] = highestBid ?? new BidDto { BidAmmount = 0 }; // If highestBid is null, set it to a default value
+        }
+
+        isLoading = false;
+    }
+
+    private async Task deleteArt(Guid id)
+    {
+        var res = await artInterface.DeleteArt(id);
+        arts = await artInterface.GetArtsAsync();
+        highestBids.Remove(id); // Remove highest bid for the deleted art
+    }
+
+    private string GetRemainingTime(DateTime expiresAt, ArtDto art)
+    {
+        var remainingTime = expiresAt - DateTime.UtcNow;
+        if (remainingTime.TotalSeconds < 0)
+        {
+            return "00 days 00 hrs 00 mins 00 secs";
+        }
+        else
+        {
+            return $"{remainingTime.Days} days {remainingTime.Hours} hrs {remainingTime.Minutes} mins {remainingTime.Seconds} secs";
+        }
+    }
+
+
+}
