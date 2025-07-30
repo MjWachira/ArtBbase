@@ -27,7 +27,6 @@ namespace ArtBbaseFrontend.Services.Art
             {
                 //change this to a list of Arts
                 return results;
-
             }
 
             return new ResponseDto();
